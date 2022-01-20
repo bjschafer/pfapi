@@ -1,0 +1,110 @@
+[
+  {
+    "Id": 1,
+    "Name": "Adept"
+  },
+  {
+    "Id": 2,
+    "Name": "Alchemist"
+  },
+  {
+    "Id": 3,
+    "Name": "Antipaladin"
+  },
+  {
+    "Id": 4,
+    "Name": "Bard"
+  },
+  {
+    "Id": 5,
+    "Name": "Bloodrager"
+  },
+  {
+    "Id": 6,
+    "Name": "Cleric"
+  },
+  {
+    "Id": 7,
+    "Name": "Druid"
+  },
+  {
+    "Id": 8,
+    "Name": "Hunter"
+  },
+  {
+    "Id": 9,
+    "Name": "Inquisitor"
+  },
+  {
+    "Id": 10,
+    "Name": "Investigator"
+  },
+  {
+    "Id": 11,
+    "Name": "Magus"
+  },
+  {
+    "Id": 12,
+    "Name": "Medium"
+  },
+  {
+    "Id": 13,
+    "Name": "Mesmerist"
+  },
+  {
+    "Id": 14,
+    "Name": "Occultist"
+  },
+  {
+    "Id": 15,
+    "Name": "Oracle"
+  },
+  {
+    "Id": 16,
+    "Name": "Paladin"
+  },
+  {
+    "Id": 17,
+    "Name": "Psychic"
+  },
+  {
+    "Id": 18,
+    "Name": "Ranger"
+  },
+  {
+    "Id": 19,
+    "Name": "Shaman"
+  },
+  {
+    "Id": 20,
+    "Name": "Scald"
+  },
+  {
+    "Id": 21,
+    "Name": "SpellLikeAbility"
+  },
+  {
+    "Id": 22,
+    "Name": "Sorcerer"
+  },
+  {
+    "Id": 23,
+    "Name": "Spiritualist"
+  },
+  {
+    "Id": 24,
+    "Name": "Summoner"
+  },
+  {
+    "Id": 25,
+    "Name": "SummonerUnchained"
+  },
+  {
+    "Id": 26,
+    "Name": "Witch"
+  },
+  {
+    "Id": 27,
+    "Name": "Wizard"
+  }
+]
