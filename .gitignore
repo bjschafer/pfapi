@@ -6,5 +6,7 @@ riderModule.iml
 
 *.sqlite
 *.db
+*.db-shm
+*.db-wal
 
 .idea/
