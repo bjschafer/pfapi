@@ -2,6 +2,7 @@
 using api.Models;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace api.Data;
 
@@ -24,6 +25,9 @@ public class ApiContext : DbContext
         var classSeedData = Helpers.GetSeedData<Class>("Class");
         modelBuilder.Entity<Class>()
                     .HasData(classSeedData);
+        var descriptorseedData = Helpers.GetSeedData<Descriptor>("Descriptor");
+        modelBuilder.Entity<Descriptor>()
+                    .HasData(descriptorseedData);
     }
 
 #endregion

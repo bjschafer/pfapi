@@ -8,11 +8,16 @@ public class Spell
     public string Description { get; set; }
     public string Summary     { get; set; }
 
-    public Descriptors?           Descriptors     { get; set; }
-    public List<ClassLevel>       ClassLevels     { get; set; }
-    public Components             Components      { get; set; }
-    public string?                SpellResistance { get; set; }
-    public string?                SavingThrow     { get; set; }
+    public List<Descriptor>? Descriptors     { get; set; }
+    public List<ClassLevel>   ClassLevels     { get; set; }
+    public string?            SpellResistance { get; set; }
+    public string?            SavingThrow     { get; set; }
+    
+    public bool       HasDivineFocusComponent { get; set; }
+    public bool       HasFocusComponent       { get; set; }
+    public bool       HasMaterialComponent    { get; set; }
+    public bool       HasSomaticComponent     { get; set; }
+    public bool       HasVerbalComponent      { get; set; }
 
     public bool HasCostlyComponents { get; set; }
     public int? MaterialCosts       { get; set; }
