@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 namespace api.Models;
 
 [Flags]
@@ -33,37 +31,6 @@ public enum Descriptors
     Shadow,
     Sonic,
     Water,
-}
-
-public enum Classes
-{
-    Adept,
-    Alchemist,
-    Antipaladin,
-    Bard,
-    Bloodrager,
-    Cleric,
-    Druid,
-    Hunter,
-    Inquisitor,
-    Investigator,
-    Magus,
-    Medium,
-    Mesmerist,
-    Occultist,
-    Oracle,
-    Paladin,
-    Psychic,
-    Ranger,
-    Shaman,
-    Scald,
-    SpellLikeAbility,
-    Sorcerer,
-    Spiritualist,
-    Summoner,
-    SummonerUnchained,
-    Witch,
-    Wizard,
 }
 
 [Flags]
