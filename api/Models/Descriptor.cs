@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace api.Models;
 
 /// <summary>
@@ -6,5 +8,6 @@ namespace api.Models;
 public class Descriptor : ISeedable
 {
     public int    Id   { get; set; }
+    [Key]
     public string Name { get; set; }
 }

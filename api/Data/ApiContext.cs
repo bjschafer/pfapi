@@ -12,9 +12,9 @@ public class ApiContext : DbContext
     {
     }
 
-    public DbSet<Class> Class { get; set; }
-
-    public DbSet<Spell> Spell { get; set; }
+    public DbSet<Class>      Class      { get; set; }
+    public DbSet<Spell>      Spell      { get; set; }
+    public DbSet<Descriptor> Descriptor { get; set; }
 
 #region Overrides of DbContext
 

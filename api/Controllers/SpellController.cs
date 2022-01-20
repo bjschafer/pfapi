@@ -22,14 +22,20 @@ public class SpellController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<Spell>>> GetSpell()
     {
-        return await _context.Spell.ToListAsync();
+        return await _context.Spell
+                             .Include(s => s.Descriptors)
+                             .Include(s => s.ClassLevels)
+                             .ToListAsync();
     }
 
     // GET: api/Spell/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Spell>> GetSpell(int id)
     {
-        var spell = await _context.Spell.FindAsync(id);
+        var spell = await _context.Spell
+                                  .Include(s => s.Descriptors)
+                                  .Include(s => s.ClassLevels)
+                                  .FirstOrDefaultAsync(s => s.Id == id);
 
         if (spell == null)
         {
@@ -72,6 +78,18 @@ public class SpellController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Spell>> PostSpell(Spell spell)
     {
+        List<Descriptor> existingDescriptors = new();
+        if (spell.Descriptors is not null)
+        {
+            foreach (var descriptor in spell.Descriptors)
+            {
+                var existing = await _context.Descriptor.FirstOrDefaultAsync(d => d.Name == descriptor.Name);
+                existingDescriptors.Add(existing ?? descriptor);
+            }
+
+            spell.Descriptors = existingDescriptors;
+        }
+        
         _context.Spell.Add(spell);
         await _context.SaveChangesAsync();
 
@@ -101,4 +119,6 @@ public class SpellController : ControllerBase
     {
         return _context.Spell.Any(e => e.Id == id);
     }
+    
+    
 }
