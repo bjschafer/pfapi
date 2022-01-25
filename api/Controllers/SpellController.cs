@@ -2,6 +2,8 @@
 using api.Data;
 using api.Models;
 
+using AutoMapper;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,30 +14,29 @@ namespace api.Controllers;
 public class SpellController : ControllerBase
 {
     private readonly ApiContext _context;
+    private readonly IMapper    _mapper;
 
-    public SpellController(ApiContext context)
+    public SpellController(ApiContext context, IMapper mapper)
     {
         _context = context;
+        _mapper  = mapper;
     }
 
     // GET: api/Spell
     [HttpGet]
-    public async Task<ActionResult<List<Spell>>> GetSpell()
+    public async Task<ActionResult<List<SpellResponse>>> GetSpell()
     {
-        return await _context.Spell
-                             .Include(s => s.Descriptors)
-                             .Include(s => s.ClassLevels)
+        var spells = await _context.Spell.Include(s => s.Descriptors)
                              .ToListAsync();
+        return Ok(this._mapper!.Map<List<SpellResponse>>(spells));
+
     }
 
     // GET: api/Spell/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Spell>> GetSpell(int id)
     {
-        var spell = await _context.Spell
-                                  .Include(s => s.Descriptors)
-                                  .Include(s => s.ClassLevels)
-                                  .FirstOrDefaultAsync(s => s.Id == id);
+        var spell = await _context.Spell.FindAsync(id);
 
         if (spell == null)
         {

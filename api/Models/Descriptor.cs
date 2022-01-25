@@ -10,4 +10,6 @@ public class Descriptor : ISeedable
     public int    Id   { get; set; }
     [Key]
     public string Name { get; set; }
+    
+    public ICollection<Spell> Spells { get; set; }
 }

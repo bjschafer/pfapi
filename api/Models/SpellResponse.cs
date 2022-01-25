@@ -1,17 +1,17 @@
 namespace api.Models;
 
-public class Spell
+public class SpellResponse
 {
-    public int    Id   { get; set; }
+    
     public string Name { get; set; }
 
     public string Description { get; set; }
     public string Summary     { get; set; }
 
-    public ICollection<Descriptor>? Descriptors     { get; set; }
-    public List<ClassLevel>  ClassLevels     { get; set; }
-    public string?           SpellResistance { get; set; }
-    public string?           SavingThrow     { get; set; }
+    public List<string>? Descriptors     { get; set; }
+    // public Dictionary<Class, int> ClassLevels     { get; set; }
+    public string?       SpellResistance { get; set; }
+    public string?       SavingThrow     { get; set; }
 
     public bool HasDivineFocusComponent { get; set; }
     public bool HasFocusComponent       { get; set; }
@@ -46,5 +46,5 @@ public class Spell
     public string  School    { get; set; }
     public string? Subschool { get; set; }
 
-    public SourceMaterial Source { get; set; }
+    public string Source { get; set; }
 }

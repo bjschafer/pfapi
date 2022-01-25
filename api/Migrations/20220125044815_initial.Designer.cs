@@ -11,8 +11,8 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20220119030320_class-seeding-redux")]
-    partial class classseedingredux
+    [Migration("20220125044815_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -195,6 +195,161 @@ namespace api.Migrations
                     b.ToTable("ClassLevel");
                 });
 
+            modelBuilder.Entity("api.Models.Descriptor", b =>
+                {
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Name");
+
+                    b.ToTable("Descriptor");
+
+                    b.HasData(
+                        new
+                        {
+                            Name = "Acid",
+                            Id = 29
+                        },
+                        new
+                        {
+                            Name = "Air",
+                            Id = 30
+                        },
+                        new
+                        {
+                            Name = "Chaotic",
+                            Id = 31
+                        },
+                        new
+                        {
+                            Name = "Cold",
+                            Id = 32
+                        },
+                        new
+                        {
+                            Name = "Curse",
+                            Id = 33
+                        },
+                        new
+                        {
+                            Name = "Darkness",
+                            Id = 34
+                        },
+                        new
+                        {
+                            Name = "Death",
+                            Id = 35
+                        },
+                        new
+                        {
+                            Name = "Disease",
+                            Id = 36
+                        },
+                        new
+                        {
+                            Name = "Draconic",
+                            Id = 37
+                        },
+                        new
+                        {
+                            Name = "Earth",
+                            Id = 38
+                        },
+                        new
+                        {
+                            Name = "Electricity",
+                            Id = 39
+                        },
+                        new
+                        {
+                            Name = "Emotion",
+                            Id = 40
+                        },
+                        new
+                        {
+                            Name = "Evil",
+                            Id = 41
+                        },
+                        new
+                        {
+                            Name = "Fear",
+                            Id = 42
+                        },
+                        new
+                        {
+                            Name = "Fire",
+                            Id = 43
+                        },
+                        new
+                        {
+                            Name = "Force",
+                            Id = 44
+                        },
+                        new
+                        {
+                            Name = "Good",
+                            Id = 45
+                        },
+                        new
+                        {
+                            Name = "LanguageDependent",
+                            Id = 46
+                        },
+                        new
+                        {
+                            Name = "Lawful",
+                            Id = 47
+                        },
+                        new
+                        {
+                            Name = "Light",
+                            Id = 48
+                        },
+                        new
+                        {
+                            Name = "Meditative",
+                            Id = 49
+                        },
+                        new
+                        {
+                            Name = "MindAffecting",
+                            Id = 50
+                        },
+                        new
+                        {
+                            Name = "Pain",
+                            Id = 51
+                        },
+                        new
+                        {
+                            Name = "Poison",
+                            Id = 52
+                        },
+                        new
+                        {
+                            Name = "Ruse",
+                            Id = 53
+                        },
+                        new
+                        {
+                            Name = "Shadow",
+                            Id = 54
+                        },
+                        new
+                        {
+                            Name = "Sonic",
+                            Id = 55
+                        },
+                        new
+                        {
+                            Name = "Water",
+                            Id = 56
+                        });
+                });
+
             modelBuilder.Entity("api.Models.SourceMaterial", b =>
                 {
                     b.Property<int>("Id")
@@ -226,18 +381,12 @@ namespace api.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Components")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Deity")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int?>("Descriptors")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Domain")
                         .HasColumnType("TEXT");
@@ -250,6 +399,21 @@ namespace api.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("HasCostlyComponents")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasDivineFocusComponent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasFocusComponent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasMaterialComponent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasSomaticComponent")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("HasVerbalComponent")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("HauntStatistics")
@@ -313,6 +477,21 @@ namespace api.Migrations
                     b.ToTable("Spell");
                 });
 
+            modelBuilder.Entity("DescriptorSpell", b =>
+                {
+                    b.Property<string>("DescriptorsName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("SpellsId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("DescriptorsName", "SpellsId");
+
+                    b.HasIndex("SpellsId");
+
+                    b.ToTable("DescriptorSpell");
+                });
+
             modelBuilder.Entity("api.Models.ClassLevel", b =>
                 {
                     b.HasOne("api.Models.Class", "Class")
@@ -337,6 +516,21 @@ namespace api.Migrations
                         .IsRequired();
 
                     b.Navigation("Source");
+                });
+
+            modelBuilder.Entity("DescriptorSpell", b =>
+                {
+                    b.HasOne("api.Models.Descriptor", null)
+                        .WithMany()
+                        .HasForeignKey("DescriptorsName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("api.Models.Spell", null)
+                        .WithMany()
+                        .HasForeignKey("SpellsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("api.Models.Spell", b =>

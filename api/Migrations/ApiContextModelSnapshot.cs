@@ -475,26 +475,19 @@ namespace api.Migrations
                     b.ToTable("Spell");
                 });
 
-            modelBuilder.Entity("api.Models.SpellDescriptor", b =>
+            modelBuilder.Entity("DescriptorSpell", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("DescriptorName")
-                        .IsRequired()
+                    b.Property<string>("DescriptorsName")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("SpellId")
+                    b.Property<int>("SpellsId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
+                    b.HasKey("DescriptorsName", "SpellsId");
 
-                    b.HasIndex("DescriptorName");
+                    b.HasIndex("SpellsId");
 
-                    b.HasIndex("SpellId");
-
-                    b.ToTable("SpellDescriptor");
+                    b.ToTable("DescriptorSpell");
                 });
 
             modelBuilder.Entity("api.Models.ClassLevel", b =>
@@ -523,30 +516,24 @@ namespace api.Migrations
                     b.Navigation("Source");
                 });
 
-            modelBuilder.Entity("api.Models.SpellDescriptor", b =>
+            modelBuilder.Entity("DescriptorSpell", b =>
                 {
-                    b.HasOne("api.Models.Descriptor", "Descriptor")
+                    b.HasOne("api.Models.Descriptor", null)
                         .WithMany()
-                        .HasForeignKey("DescriptorName")
+                        .HasForeignKey("DescriptorsName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("api.Models.Spell", "Spell")
-                        .WithMany("Descriptors")
-                        .HasForeignKey("SpellId")
+                    b.HasOne("api.Models.Spell", null)
+                        .WithMany()
+                        .HasForeignKey("SpellsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Descriptor");
-
-                    b.Navigation("Spell");
                 });
 
             modelBuilder.Entity("api.Models.Spell", b =>
                 {
                     b.Navigation("ClassLevels");
-
-                    b.Navigation("Descriptors");
                 });
 #pragma warning restore 612, 618
         }
