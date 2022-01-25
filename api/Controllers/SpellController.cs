@@ -78,18 +78,6 @@ public class SpellController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Spell>> PostSpell(Spell spell)
     {
-        List<Descriptor> existingDescriptors = new();
-        if (spell.Descriptors is not null)
-        {
-            foreach (var descriptor in spell.Descriptors)
-            {
-                var existing = await _context.Descriptor.FirstOrDefaultAsync(d => d.Name == descriptor.Name);
-                existingDescriptors.Add(existing ?? descriptor);
-            }
-
-            spell.Descriptors = existingDescriptors;
-        }
-        
         _context.Spell.Add(spell);
         await _context.SaveChangesAsync();
 

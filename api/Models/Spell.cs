@@ -8,7 +8,7 @@ public class Spell
     public string Description { get; set; }
     public string Summary     { get; set; }
 
-    public List<Descriptor>? Descriptors     { get; set; }
+    public List<SpellDescriptor>? Descriptors     { get; set; }
     public List<ClassLevel>  ClassLevels     { get; set; }
     public string?           SpellResistance { get; set; }
     public string?           SavingThrow     { get; set; }
