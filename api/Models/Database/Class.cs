@@ -1,4 +1,4 @@
-namespace api.Models;
+namespace api.Models.Database;
 
 /// <summary>
 ///     Represents a character class

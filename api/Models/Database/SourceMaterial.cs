@@ -1,4 +1,4 @@
-namespace api.Models;
+namespace api.Models.Database;
 
 /// <summary>
 ///     Represents the source (book, AP, etc.) from whence an item comes.

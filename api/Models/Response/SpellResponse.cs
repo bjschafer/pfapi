@@ -1,17 +1,19 @@
-namespace api.Models;
+using api.Models.Database;
+
+namespace api.Models.Response;
 
 public class SpellResponse
 {
-    
     public string Name { get; set; }
 
     public string Description { get; set; }
     public string Summary     { get; set; }
 
-    public List<string>? Descriptors     { get; set; }
+    public List<string>? Descriptors { get; set; }
     // public Dictionary<Class, int> ClassLevels     { get; set; }
-    public string?       SpellResistance { get; set; }
-    public string?       SavingThrow     { get; set; }
+    public List<KeyValuePair<Class, int>> ClassLevels     { get; set; }
+    public string?                        SpellResistance { get; set; }
+    public string?                        SavingThrow     { get; set; }
 
     public bool HasDivineFocusComponent { get; set; }
     public bool HasFocusComponent       { get; set; }
@@ -46,5 +48,5 @@ public class SpellResponse
     public string  School    { get; set; }
     public string? Subschool { get; set; }
 
-    public string Source { get; set; }
+    public SourceMaterialResponse Source { get; set; }
 }

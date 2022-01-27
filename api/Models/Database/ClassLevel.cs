@@ -1,4 +1,4 @@
-namespace api.Models;
+namespace api.Models.Database;
 
 /// <summary>
 ///     Simple "join" class to help map spells and casters

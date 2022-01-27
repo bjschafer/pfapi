@@ -1,6 +1,7 @@
 #nullable disable
 using api.Data;
-using api.Models;
+using api.Models.Database;
+using api.Models.Response;
 
 using AutoMapper;
 
@@ -26,15 +27,19 @@ public class SpellController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<SpellResponse>>> GetSpell()
     {
-        var spells = await _context.Spell.Include(s => s.Descriptors)
-                             .ToListAsync();
-        return Ok(this._mapper!.Map<List<SpellResponse>>(spells));
-
+        var spells = await _context.Spell
+                                   .Include(s => s.Descriptors)
+                                   .Include(s => s.Source)
+                                   .Include(s => s.ClassLevels)
+                                   .ThenInclude(cl => cl.Class)
+                                   .ToListAsync();
+        var temp = _mapper!.Map<List<SpellResponse>>(spells);
+        return Ok(temp);
     }
 
     // GET: api/Spell/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Spell>> GetSpell(int id)
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<SpellResponse>> GetSpell(int id)
     {
         var spell = await _context.Spell.FindAsync(id);
 
@@ -43,12 +48,12 @@ public class SpellController : ControllerBase
             return NotFound();
         }
 
-        return Ok(spell);
+        return Ok(_mapper.Map<SpellResponse>(spell));
     }
 
     // PUT: api/Spell/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     public async Task<IActionResult> PutSpell(int id, Spell spell)
     {
         if (id != spell.Id)
@@ -108,6 +113,4 @@ public class SpellController : ControllerBase
     {
         return _context.Spell.Any(e => e.Id == id);
     }
-    
-    
 }

@@ -1,5 +1,5 @@
 #nullable disable
-using api.Models;
+using api.Models.Database;
 
 using Microsoft.EntityFrameworkCore;
 
