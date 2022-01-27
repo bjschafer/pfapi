@@ -11,7 +11,7 @@ public class SpellResponse
 
     public List<string>? Descriptors { get; set; }
     // public Dictionary<Class, int> ClassLevels     { get; set; }
-    public List<KeyValuePair<Class, int>> ClassLevels     { get; set; }
+    public List<KeyValuePair<string, int>> ClassSpells     { get; set; }
     public string?                        SpellResistance { get; set; }
     public string?                        SavingThrow     { get; set; }
 

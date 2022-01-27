@@ -13,6 +13,8 @@ public class Mapper : Profile
         CreateMap<Descriptor, string>()?.ConstructUsing(d => d.Name);
         CreateMap<SourceMaterial, SourceMaterialResponse>();
 
-        CreateMap<ClassLevel, KeyValuePair<Class, int>>().ConstructUsing(cl => new KeyValuePair<Class, int>(cl.Class, cl.Level));
+        // CreateMap<ClassLevel, KeyValuePair<Class, int>>().ConstructUsing(cl => new KeyValuePair<Class, int>(cl.Class, cl.Level));
+        CreateMap<ClassSpell, KeyValuePair<string, int>>()
+           .ConstructUsing(cs => new KeyValuePair<string, int>(cs.Class.Name, cs.Level));
     }
 }

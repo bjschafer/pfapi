@@ -30,8 +30,8 @@ public class SpellController : ControllerBase
         var spells = await _context.Spell
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
-                                   .Include(s => s.ClassLevels)
-                                   .ThenInclude(cl => cl.Class)
+                                   .Include(s => s.ClassSpells)
+                                   .ThenInclude(cs => cs.Class)
                                    .ToListAsync();
         var temp = _mapper!.Map<List<SpellResponse>>(spells);
         return Ok(temp);
