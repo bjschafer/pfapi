@@ -33,15 +33,19 @@ public class SpellController : ControllerBase
                                    .Include(s => s.ClassSpells)
                                    .ThenInclude(cs => cs.Class)
                                    .ToListAsync();
-        var temp = _mapper!.Map<List<SpellResponse>>(spells);
-        return Ok(temp);
+        return Ok(_mapper!.Map<List<SpellResponse>>(spells));
     }
 
     // GET: api/Spell/5
     [HttpGet("{id:int}")]
     public async Task<ActionResult<SpellResponse>> GetSpell(int id)
     {
-        var spell = await _context.Spell.FindAsync(id);
+        var spell = await _context.Spell
+                                  .Include(s => s.Descriptors)
+                                  .Include(s => s.Source)
+                                  .Include(s => s.ClassSpells)
+                                  .ThenInclude(cs => cs.Class)
+                                  .FirstOrDefaultAsync(s => s.Id == id);
 
         if (spell == null)
         {
@@ -49,6 +53,27 @@ public class SpellController : ControllerBase
         }
 
         return Ok(_mapper.Map<SpellResponse>(spell));
+    }
+
+    // GET: api/Spell/Class/Wizard
+    [HttpGet("Class/{className}")]
+    public async Task<ActionResult<List<SpellResponse>>> GetSpellsByClass(string className)
+    {
+        var desiredClass = await _context.Class
+                                         .FirstOrDefaultAsync(c => c.Name == className);
+        if (desiredClass is null)
+        {
+            return NotFound($"Class {className} not found");
+        }
+
+        var spells = await _context.Spell
+                                   .Include(s => s.Descriptors)
+                                   .Include(s => s.Source)
+                                   .Include(s => s.ClassSpells)
+                                   .ThenInclude(cs => cs.Class)
+                                   .Where(s => s.Classes.Contains(desiredClass))
+                                   .ToListAsync();
+        return Ok(_mapper.Map<List<SpellResponse>>(spells));
     }
 
     // PUT: api/Spell/5
