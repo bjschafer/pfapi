@@ -20,8 +20,9 @@ public class Spell
     public bool HasSomaticComponent     { get; set; }
     public bool HasVerbalComponent      { get; set; }
 
-    public bool HasCostlyComponents { get; set; }
-    public int? MaterialCosts       { get; set; }
+    public bool    HasCostlyComponents { get; set; }
+    public int?    MaterialCosts       { get; set; }
+    public string? ComponentDetails    { get; set; }
 
     public bool IsDismissable { get; set; }
     public bool IsShapeable   { get; set; }
