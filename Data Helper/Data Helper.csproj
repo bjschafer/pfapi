@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>Data_Helper</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\api\api.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CsvHelper" Version="27.2.1" />
+    </ItemGroup>
+
+</Project>
