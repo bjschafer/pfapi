@@ -7,28 +7,26 @@ namespace Data_Helper;
 
 internal class Program
 {
-    static async Task Main(string[] args)
+    private static async Task Main(string[] args)
     {
         // maybe someday i'll make this great. for now it's gonna suck :)
-        string spellCsv = args.First();
+        var spellCsv = args.First();
         if (!File.Exists(spellCsv))
         {
             Console.Error.WriteLine($"Unable to find or access ${spellCsv}");
-            System.Environment.Exit(1);
+            Environment.Exit(1);
         }
 
         var csvSpells = await SpellImporter.ImportSpellFromCsv(spellCsv);
 
-        var mapper   = GetMapperConfig().CreateMapper();
-        var dbSpells = mapper.Map<IEnumerable<Spell>>(csvSpells);
-        
-        Console.WriteLine($"Found and imported {csvSpells.Count()} spells.");
-    }
+        // var mapper   = new MapperConfiguration(cfg => cfg.AddProfile<MappingProfile>()).CreateMapper();
+        // var dbSpells = mapper.Map<IEnumerable<Spell>>(csvSpells);
+        //
+        // Console.WriteLine($"Found and imported {csvSpells.Count()} spells.");
 
-    private static MapperConfiguration GetMapperConfig()
-    {
-        return new MapperConfiguration(cfg =>
-                                           cfg.CreateMap<CsvSpell, Spell>()
-        );
+        IEnumerable<string> spellsAsJson = csvSpells.Select(c => c.ToApiJsonObject());
+        
+        Console.WriteLine(spellsAsJson.FirstOrDefault());
     }
+    
 }

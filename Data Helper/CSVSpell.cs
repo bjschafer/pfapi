@@ -47,57 +47,57 @@ public class CsvSpell
     public int?    Adept                { get; set; } // NULL
     public string? Deity                { get; set; } // NULL
     [Name("SLA_Level")]
-    public int?    SLALevel             { get; set; } // 2
-    public string? Domain               { get; set; } // Fire (2), Scalykind (3)
-    public string  ShortDescription     { get; set; } // Ranged touch attack
-    public bool    Acid                 { get; set; } // 0
-    public bool    Air                  { get; set; } // 0
-    public bool    Chaotic              { get; set; } // 0
-    public bool    Cold                 { get; set; } // 0
-    public bool    Curse                { get; set; } // 0
-    public bool    Darkness             { get; set; } // 0
-    public bool    Death                { get; set; } // 0
-    public bool    Disease              { get; set; } // 0
-    public bool    Earth                { get; set; } // 0
-    public bool    Electricity          { get; set; } // 0
-    public bool    Emotion              { get; set; } // 0
-    public bool    Evil                 { get; set; } // 0
-    public bool    Fear                 { get; set; } // 0
-    public bool    Fire                 { get; set; } // 0
-    public bool    Force                { get; set; } // 0
-    public bool    Good                 { get; set; } // 0
-    public bool    Language_dependent   { get; set; } // 0
-    public bool    Lawful               { get; set; } // 0
-    public bool    Light                { get; set; } // 0
-    public bool    Mind_affecting       { get; set; } // 0
-    public bool    Pain                 { get; set; } // 0
-    public bool    Poison               { get; set; } // 0
-    public bool    Shadow               { get; set; } // 0
-    public bool    Sonic                { get; set; } // 0
-    public bool    Water                { get; set; } // 0
-    public string? Linktext             { get; set; } // https://...
-    public int     Id                   { get; set; } // 42
-    public int?    MaterialCosts        { get; set; } // 1500
-    public string  Bloodline            { get; set; } // Undead (9)
-    public string  Patron               { get; set; } // Plague (8)
-    public string  MythicText           { get; set; } // Add your tier...
-    public string  Augmented            { get; set; } // Augmented (6th) spend...
-    public bool    Mythic               { get; set; } // 0
-    public int?    Bloodrager           { get; set; } // 2
-    public int?    Shaman               { get; set; } // 2
-    public int?    Psychic              { get; set; } // 2
-    public int?    Medium               { get; set; } // 2
-    public int?    Mesmerist            { get; set; } // 2
-    public int?    Occultist            { get; set; } // 2
-    public int?    Spiritualist         { get; set; } // 2
-    public int?    Skald                { get; set; } // 2
-    public int?    Investigator         { get; set; } // 2
-    public int?    Hunter               { get; set; } // 2
-    public string  HauntStatistics      { get; set; } // ???
-    public bool    Ruse                 { get; set; } // 0
-    public bool    Draconic             { get; set; } // 0
-    public bool    Meditative           { get; set; } // 0
-    public int?    SummonerUnchained    { get; set; } // 2
+    public int? SLALevel { get;              set; } // 2
+    public string? Domain             { get; set; } // Fire (2), Scalykind (3)
+    public string  ShortDescription   { get; set; } // Ranged touch attack
+    public bool    Acid               { get; set; } // 0
+    public bool    Air                { get; set; } // 0
+    public bool    Chaotic            { get; set; } // 0
+    public bool    Cold               { get; set; } // 0
+    public bool    Curse              { get; set; } // 0
+    public bool    Darkness           { get; set; } // 0
+    public bool    Death              { get; set; } // 0
+    public bool    Disease            { get; set; } // 0
+    public bool    Earth              { get; set; } // 0
+    public bool    Electricity        { get; set; } // 0
+    public bool    Emotion            { get; set; } // 0
+    public bool    Evil               { get; set; } // 0
+    public bool    Fear               { get; set; } // 0
+    public bool    Fire               { get; set; } // 0
+    public bool    Force              { get; set; } // 0
+    public bool    Good               { get; set; } // 0
+    public bool    Language_dependent { get; set; } // 0
+    public bool    Lawful             { get; set; } // 0
+    public bool    Light              { get; set; } // 0
+    public bool    Mind_affecting     { get; set; } // 0
+    public bool    Pain               { get; set; } // 0
+    public bool    Poison             { get; set; } // 0
+    public bool    Shadow             { get; set; } // 0
+    public bool    Sonic              { get; set; } // 0
+    public bool    Water              { get; set; } // 0
+    public string? Linktext           { get; set; } // https://...
+    public int     Id                 { get; set; } // 42
+    public int?    MaterialCosts      { get; set; } // 1500
+    public string  Bloodline          { get; set; } // Undead (9)
+    public string  Patron             { get; set; } // Plague (8)
+    public string  MythicText         { get; set; } // Add your tier...
+    public string  Augmented          { get; set; } // Augmented (6th) spend...
+    public bool    Mythic             { get; set; } // 0
+    public int?    Bloodrager         { get; set; } // 2
+    public int?    Shaman             { get; set; } // 2
+    public int?    Psychic            { get; set; } // 2
+    public int?    Medium             { get; set; } // 2
+    public int?    Mesmerist          { get; set; } // 2
+    public int?    Occultist          { get; set; } // 2
+    public int?    Spiritualist       { get; set; } // 2
+    public int?    Skald              { get; set; } // 2
+    public int?    Investigator       { get; set; } // 2
+    public int?    Hunter             { get; set; } // 2
+    public string  HauntStatistics    { get; set; } // ???
+    public bool    Ruse               { get; set; } // 0
+    public bool    Draconic           { get; set; } // 0
+    public bool    Meditative         { get; set; } // 0
+    public int?    SummonerUnchained  { get; set; } // 2
 
 
     // 	haunt_statistics	ruse	draconic	meditative	summoner_unchained

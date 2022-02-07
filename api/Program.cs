@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 using api.Data;
 
 using Microsoft.EntityFrameworkCore;

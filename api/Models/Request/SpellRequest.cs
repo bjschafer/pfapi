@@ -1,6 +1,8 @@
-namespace api.Models.Response;
+using api.Models.Response;
 
-public class SpellResponse
+namespace api.Models.Request;
+
+public class SpellRequest
 {
     public string Name { get; set; }
 
@@ -8,7 +10,6 @@ public class SpellResponse
     public string Summary     { get; set; }
 
     public List<string>? Descriptors { get; set; }
-    // public Dictionary<Class, int> ClassLevels     { get; set; }
     public List<KeyValuePair<string, int>> ClassSpells     { get; set; }
     public string?                         SpellResistance { get; set; }
     public string?                         SavingThrow     { get; set; }
@@ -46,5 +47,5 @@ public class SpellResponse
     public string  School    { get; set; }
     public string? Subschool { get; set; }
 
-    public SourceMaterialResponse Source { get; set; }
+    public string Source { get; set; }
 }

@@ -1,35 +1,115 @@
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 using api.Models.Database;
+using api.Models.Request;
 
 using CsvHelper;
 using CsvHelper.Configuration;
+
+using Microsoft.AspNetCore.Server.IIS.Core;
 
 namespace Data_Helper;
 
 public static class SpellImporter
 {
+    private static Dictionary<string, string> ShortLongClassNames = new Dictionary<string, string>()
+    {
+        {
+            "Wiz", "Wizard"
+        },
+        {
+            "Sor", "Sorcerer"
+        },
+    };
+    public static string ToApiJsonObject(this CsvSpell csvSpell)
+    {
+        // let's begin by "cheating": we'll actually make a "real" spell object
+        var spell = new SpellRequest
+        {
+            Name                    = csvSpell.Name,
+            Area                    = csvSpell.Area,
+            Bloodline               = csvSpell.Bloodline,
+            CastingTime             = csvSpell.CastingTime,
+            ClassSpells             = ParseClasses(csvSpell),
+            SpellResistance         = csvSpell.SpellResistance,
+            SavingThrow             = csvSpell.SavingThrow,
+            HasDivineFocusComponent = csvSpell.DivineFocus,
+            HasFocusComponent       = csvSpell.Focus,
+            HasMaterialComponent    = csvSpell.Material,
+            HasSomaticComponent     = csvSpell.Somatic,
+            HasVerbalComponent      = csvSpell.Verbal,
+            HasCostlyComponents     = csvSpell.CostlyComponents,
+            MaterialCosts           = csvSpell.MaterialCosts,
+            IsDismissable           = csvSpell.Dismissible,
+            IsShapeable             = csvSpell.Shapeable,
+            IsMythic                = csvSpell.Mythic,
+            MythicText              = csvSpell.MythicText,
+            MythicAugmented         = csvSpell.Augmented,
+            Deity                   = csvSpell.Deity,
+            Description             = csvSpell.Description,
+            Summary                 = csvSpell.ShortDescription, // ? was this what i meant?
+            Descriptors             = ParseDescriptors(csvSpell.Descriptor),
+            Domain                  = csvSpell.Domain,
+            HauntStatistics         = csvSpell.HauntStatistics,
+            Patron                  = csvSpell.Patron,
+            School                  = csvSpell.School,
+            Subschool               = csvSpell.Subschool,
+            Source                  = csvSpell.Source,
+            Duration                = csvSpell.Duration,
+            Effect                  = csvSpell.Effect,
+            Range                   = csvSpell.Range,
+            Targets                 = csvSpell.Targets,
+
+        };
+
+        return JsonSerializer.Serialize(spell);
+    }
     /// <summary>
-    /// the descriptor field is 0 or more words separated by commas
+    ///     the descriptor field is 0 or more words separated by commas
     /// </summary>
     /// <param name="raw">the raw field from the CSV</param>
     /// <returns>a List of descriptors</returns>
-    public static List<Descriptor> ParseDescriptors(string raw)
+    public static List<string>? ParseDescriptors(string? raw)
     {
-        List<Descriptor> ret = new();
-        foreach (string segment in raw.Split(','))
+        if (raw is null)
         {
-            ret.Add(new Descriptor()
-            {
-                Name = segment.Trim(),
-            });
+            return null;
+        }
+        List<string> ret = new();
+        foreach (var segment in raw.Split(','))
+        {
+            ret.Add(segment.Trim());
         }
 
         return ret;
     }
 
+    public static List<KeyValuePair<string, int>> ParseClasses(CsvSpell raw)
+    {
+        var classes      = new List<KeyValuePair<string, int>>();
+        var csvSpellType = typeof(CsvSpell);
+        var classProperties = csvSpellType.GetProperties().Where(p => p.PropertyType == typeof(int?));
+
+        foreach (var classProperty in classProperties)
+        {
+            string className  = classProperty.Name;
+            if (ShortLongClassNames.ContainsKey(className))
+            {
+                className = ShortLongClassNames[className];
+            }
+            int    spellLevel = Convert.ToInt32(classProperty.GetValue(raw));
+            
+            classes.Add(new KeyValuePair<string, int>(className, spellLevel));
+        }
+
+        return classes;
+    }
+
     /// <summary>
-    /// Takes a CSV file from the SRD and converts it into representative objects
+    ///     Takes a CSV file from the SRD and converts it into representative objects
     /// </summary>
     /// <param name="filepath">Path to a CSV file containing spells</param>
     /// <returns>An eager list of spells.</returns>
@@ -39,7 +119,7 @@ public static class SpellImporter
         var csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
         {
             PrepareHeaderForMatch = args => ReformatHeader(args.Header),
-            
+
         };
         using var streamReader = File.OpenText(filepath);
         using var csvReader    = new CsvReader(streamReader, csvConfig);
@@ -52,7 +132,7 @@ public static class SpellImporter
 
     private static async Task ReformatNullInFile(string filepath)
     {
-        string fileText = await File.ReadAllTextAsync(filepath);
+        var fileText = await File.ReadAllTextAsync(filepath);
         fileText = fileText.Replace("NULL", "");
         await File.WriteAllTextAsync(filepath, fileText);
     }

@@ -40,7 +40,7 @@ public class ApiContext : DbContext
                                  j.HasKey(cs => new
                                  {
                                      cs.ClassId,
-                                     cs.SpellId
+                                     cs.SpellId,
                                  });
                              });
 

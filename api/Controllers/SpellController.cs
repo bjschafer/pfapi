@@ -1,6 +1,7 @@
 #nullable disable
 using api.Data;
 using api.Models.Database;
+using api.Models.Request;
 using api.Models.Response;
 
 using AutoMapper;
@@ -107,8 +108,9 @@ public class SpellController : ControllerBase
     // POST: api/Spell
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Spell>> PostSpell(Spell spell)
+    public async Task<ActionResult<Spell>> PostSpell(SpellRequest spellRequest)
     {
+        var spell = _mapper.Map<Spell>(spellRequest);
         _context.Spell.Add(spell);
         await _context.SaveChangesAsync();
 

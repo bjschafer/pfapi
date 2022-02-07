@@ -9,7 +9,7 @@ public class Spell
     public string Summary     { get; set; }
 
     public ICollection<Descriptor>? Descriptors     { get; set; }
-    public ICollection<Class> Classes         { get; set; }
+    public ICollection<Class>       Classes         { get; set; }
     public List<ClassSpell>         ClassSpells     { get; set; }
     public string?                  SpellResistance { get; set; }
     public string?                  SavingThrow     { get; set; }
