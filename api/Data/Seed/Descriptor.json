@@ -56,6 +56,10 @@
     "Name": "Fear"
   },
   {
+    "Id": 57,
+    "Name": "Figment"
+  },
+  {
     "Id": 43,
     "Name": "Fire"
   },
@@ -69,7 +73,7 @@
   },
   {
     "Id": 46,
-    "Name": "LanguageDependent"
+    "Name": "Language-Dependent"
   },
   {
     "Id": 47,
@@ -85,7 +89,7 @@
   },
   {
     "Id": 50,
-    "Name": "MindAffecting"
+    "Name": "Mind-Affecting"
   },
   {
     "Id": 51,
