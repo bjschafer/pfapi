@@ -4,13 +4,23 @@ namespace api.Models.Request;
 
 public class SpellRequest
 {
-    public string Name { get; set; }
+#region Overrides of Object
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return this.Name;
+    }
+
+#endregion
+
+    public          string Name { get; set; }
 
     public string Description { get; set; }
     public string Summary     { get; set; }
 
     public List<string>? Descriptors { get; set; }
-    public List<KeyValuePair<string, int>> ClassSpells     { get; set; }
+    public List<ClassSpellRequest> ClassSpells     { get; set; }
     public string?                         SpellResistance { get; set; }
     public string?                         SavingThrow     { get; set; }
 

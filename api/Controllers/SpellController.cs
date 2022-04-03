@@ -17,14 +17,19 @@ public class SpellController : ControllerBase
 {
     private readonly ApiContext _context;
     private readonly IMapper    _mapper;
+    private readonly ILogger<SpellController>    _logger;
 
-    public SpellController(ApiContext context, IMapper mapper)
+    public SpellController(ApiContext context, IMapper mapper, ILogger<SpellController> logger)
     {
         _context = context;
         _mapper  = mapper;
+        _logger  = logger;
     }
 
-    // GET: api/Spell
+    /// <summary>
+    /// Get all spells
+    /// </summary>
+    /// <returns>A JSON list containing all spells in the database</returns>
     [HttpGet]
     public async Task<ActionResult<List<SpellResponse>>> GetSpell()
     {
@@ -34,11 +39,24 @@ public class SpellController : ControllerBase
                                    .Include(s => s.ClassSpells)
                                    .ThenInclude(cs => cs.Class)
                                    .ToListAsync();
-        return Ok(_mapper!.Map<List<SpellResponse>>(spells));
+        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
+        return Ok(mappedSpells);
     }
 
-    // GET: api/Spell/5
+    /// <summary>
+    /// Get a spell with a specific ID
+    /// </summary>
+    /// <param name="id">The spell's numeric ID</param>
+    /// <returns>A JSON object representing the given spell, if it exists</returns>
+    /// <remarks>
+    /// This is probably only useful if you've stored the ID in your client app
+    /// and want to quickly fetch data on the spell
+    /// </remarks>
+    /// <response code="200">Returns the spell</response>
+    /// <response code="404">Spell with given ID not found</response>
     [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SpellResponse>> GetSpell(int id)
     {
         var spell = await _context.Spell
@@ -108,16 +126,51 @@ public class SpellController : ControllerBase
     // POST: api/Spell
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<Spell>> PostSpell(SpellRequest spellRequest)
+    public async Task<ActionResult<Spell>> PostSpell([FromBody] SpellRequest spellRequest)
     {
         var spell = _mapper.Map<Spell>(spellRequest);
+        spell.ClassSpells.Clear();
+        spell.Descriptors?.Clear();
+
+        if (spellRequest.Descriptors != null)
+        {
+            foreach (var descriptorName in spellRequest.Descriptors)
+            {
+                var descriptorEntity = await _context.Descriptor.FirstOrDefaultAsync(d => d.Name.ToLower() == descriptorName.ToLower());
+                if (descriptorEntity is null)
+                {
+                    _logger.LogError("Couldn't find a descriptor matching {Name}", descriptorName);
+                    continue;
+                }
+                spell.Descriptors?.Add(descriptorEntity);
+            }
+        }
+
+        foreach (var classLevel in spellRequest.ClassSpells.Select(cs => new KeyValuePair<string, int>(cs.ClassName, cs.Level)))
+        {
+            var classEntity = await _context.Class.FirstOrDefaultAsync(c => c.Name == classLevel.Key);
+            if (classEntity is null)
+            {
+                _logger.LogError("Couldn't find a class for {Class}", classLevel.Key);
+                continue;
+            }
+            var classSpell = new ClassSpell()
+            {
+                Class = classEntity,
+                ClassId = classEntity.Id,
+                Level = classLevel.Value,
+            };
+            spell.ClassSpells.Add(classSpell);
+        }
+
         _context.Spell.Add(spell);
+
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetSpell", new
+        return CreatedAtAction(nameof(GetSpell), new
         {
             id = spell.Id,
-        }, spell);
+        }, spellRequest);
     }
 
     // DELETE: api/Spell/5

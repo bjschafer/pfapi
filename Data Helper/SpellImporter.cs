@@ -1,21 +1,16 @@
 using System.Globalization;
 using System.Text.Json;
-using System.Text.Json.Nodes;
-using System.Text.Json.Serialization;
 
-using api.Models.Database;
 using api.Models.Request;
 
 using CsvHelper;
 using CsvHelper.Configuration;
 
-using Microsoft.AspNetCore.Server.IIS.Core;
-
 namespace Data_Helper;
 
 public static class SpellImporter
 {
-    private static Dictionary<string, string> ShortLongClassNames = new Dictionary<string, string>()
+    private static readonly Dictionary<string, string> ShortLongClassNames = new()
     {
         {
             "Wiz", "Wizard"
@@ -79,30 +74,54 @@ public static class SpellImporter
             return null;
         }
         List<string> ret = new();
+        raw = raw.Replace(" or ", ",");
         foreach (var segment in raw.Split(','))
         {
-            ret.Add(segment.Trim());
+            var cleanSegment = segment
+                              .Replace("; see below", "")
+                              .Replace("UM", "")
+                              .Replace("see text", "")
+                              .Replace(";", "")
+                              .Trim();
+            if (cleanSegment == "law") cleanSegment   = "lawful";
+            if (cleanSegment == "chaos") cleanSegment = "chaotic";
+            if (!String.IsNullOrWhiteSpace(cleanSegment))
+            {
+                ret.Add(cleanSegment);
+            }
         }
 
+        if (ret.Count == 0)
+        {
+            return null;
+        }
         return ret;
     }
 
-    public static List<KeyValuePair<string, int>> ParseClasses(CsvSpell raw)
+    public static List<ClassSpellRequest> ParseClasses(CsvSpell raw)
     {
-        var classes      = new List<KeyValuePair<string, int>>();
-        var csvSpellType = typeof(CsvSpell);
+        var classes         = new List<ClassSpellRequest>();
+        var csvSpellType    = typeof(CsvSpell);
         var classProperties = csvSpellType.GetProperties().Where(p => p.PropertyType == typeof(int?));
 
         foreach (var classProperty in classProperties)
         {
-            string className  = classProperty.Name;
+            var className = classProperty.Name;
             if (ShortLongClassNames.ContainsKey(className))
             {
                 className = ShortLongClassNames[className];
             }
-            int    spellLevel = Convert.ToInt32(classProperty.GetValue(raw));
-            
-            classes.Add(new KeyValuePair<string, int>(className, spellLevel));
+            var level = classProperty.GetValue(raw);
+            if (level is not null)
+            {
+                var spellLevel = Convert.ToInt32(level);
+
+                classes.Add(new ClassSpellRequest
+                {
+                    ClassName = className,
+                    Level     = spellLevel,
+                });
+            }
         }
 
         return classes;
