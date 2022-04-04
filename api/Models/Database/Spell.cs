@@ -1,5 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
+using Microsoft.EntityFrameworkCore;
+
 namespace api.Models.Database;
 
+[Index(nameof(Name), IsUnique = true)]
 public class Spell
 {
     public int    Id   { get; set; }

@@ -47,7 +47,7 @@ public class SpellController : ControllerBase
     /// <summary>
     /// Get a spell with a specific ID
     /// </summary>
-    /// <param name="id">The spell's numeric ID</param>
+    /// <param name="name">The spell's exact name</param>
     /// <returns>A JSON object representing the given spell, if it exists</returns>
     /// <remarks>
     /// This is probably only useful if you've stored the ID in your client app
@@ -58,14 +58,14 @@ public class SpellController : ControllerBase
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SpellResponse>> GetSpell(int id)
+    public async Task<ActionResult<SpellResponse>> GetSpell(string name)
     {
         var spell = await _context.Spell
                                   .Include(s => s.Descriptors)
                                   .Include(s => s.Source)
                                   .Include(s => s.ClassSpells)
                                   .ThenInclude(cs => cs.Class)
-                                  .FirstOrDefaultAsync(s => s.Id == id);
+                                  .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
 
         if (spell == null)
         {
@@ -75,12 +75,18 @@ public class SpellController : ControllerBase
         return Ok(_mapper.Map<SpellResponse>(spell));
     }
 
-    // GET: api/Spell/Class/Wizard
+    /// <summary>
+    /// Get all spells on a given class list
+    /// </summary>
+    /// <param name="className">Class to search for, e.g. Wizard</param>
+    /// <returns>Spells that class can cast</returns>
+    /// <response code="200">Returns all requested spells</response>
+    /// <response code="404">The class you specified wasn't found</response>
     [HttpGet("Class/{className}")]
     public async Task<ActionResult<List<SpellResponse>>> GetSpellsByClass(string className)
     {
         var desiredClass = await _context.Class
-                                         .FirstOrDefaultAsync(c => c.Name == className);
+                                         .FirstOrDefaultAsync(c => c.Name.ToLower() == className.ToLower());
         if (desiredClass is null)
         {
             return NotFound($"Class {className} not found");
@@ -97,8 +103,12 @@ public class SpellController : ControllerBase
         return Ok(mappedSpells);
     }
 
-    // PUT: api/Spell/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    /// <summary>
+    /// Update a spell
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="spellRequest"></param>
+    /// <returns></returns>
     [HttpPut("{id:int}")]
     public async Task<IActionResult> PutSpell(int id, SpellRequest spellRequest)
     {
@@ -114,8 +124,11 @@ public class SpellController : ControllerBase
         return NoContent();
     }
 
-    // POST: api/Spell
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    /// <summary>
+    /// Create a new spell
+    /// </summary>
+    /// <param name="spellRequest"></param>
+    /// <returns></returns>
     [HttpPost]
     public async Task<ActionResult<Spell>> PostSpell([FromBody] SpellRequest spellRequest)
     {
@@ -179,7 +192,11 @@ public class SpellController : ControllerBase
         return spell;
     }
 
-    // DELETE: api/Spell/5
+    /// <summary>
+    /// Remove a spell
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSpell(int id)
     {
