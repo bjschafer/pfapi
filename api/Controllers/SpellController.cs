@@ -5,6 +5,7 @@ using api.Models.Request;
 using api.Models.Response;
 
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,9 @@ namespace api.Controllers;
 [ApiController]
 public class SpellController : ControllerBase
 {
-    private readonly ApiContext _context;
-    private readonly IMapper    _mapper;
-    private readonly ILogger<SpellController>    _logger;
+    private readonly ApiContext               _context;
+    private readonly IMapper                  _mapper;
+    private readonly ILogger<SpellController> _logger;
 
     public SpellController(ApiContext context, IMapper mapper, ILogger<SpellController> logger)
     {
@@ -92,34 +93,24 @@ public class SpellController : ControllerBase
                                    .ThenInclude(cs => cs.Class)
                                    .Where(s => s.Classes.Contains(desiredClass))
                                    .ToListAsync();
-        return Ok(_mapper.Map<List<SpellResponse>>(spells));
+        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
+        return Ok(mappedSpells);
     }
 
     // PUT: api/Spell/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> PutSpell(int id, Spell spell)
+    public async Task<IActionResult> PutSpell(int id, SpellRequest spellRequest)
     {
-        if (id != spell.Id)
+        var existingSpell = await _context.Spell.FindAsync(id);
+        if (existingSpell is null)
         {
-            return BadRequest();
+            return NotFound();
         }
+        var spell = _mapper.Map(spellRequest, existingSpell);
 
-        _context.Entry(spell).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!SpellExists(id))
-            {
-                return NotFound();
-            }
-            throw;
-        }
-
+        _context.Entry(spell!).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
         return NoContent();
     }
 
@@ -128,11 +119,30 @@ public class SpellController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Spell>> PostSpell([FromBody] SpellRequest spellRequest)
     {
+        var spell = await MapSpellRequestToSpell(spellRequest);
+
+        _context.Spell.Add(spell);
+
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetSpell), new
+        {
+            id = spell.Id,
+        }, spellRequest);
+    }
+    private async Task<Spell> MapSpellRequestToSpell(SpellRequest spellRequest)
+    {
         var spell = _mapper.Map<Spell>(spellRequest);
         spell.ClassSpells.Clear();
         spell.Descriptors?.Clear();
 
-        if (spellRequest.Descriptors != null)
+        spell = await SetDescriptorForSpell(spell, spellRequest);
+        spell = await SetClassForSpell(spell, spellRequest);
+        return spell;
+    }
+    private async Task<Spell> SetDescriptorForSpell(Spell spell, SpellRequest spellRequest)
+    {
+        if (spellRequest.Descriptors is null)
         {
             foreach (var descriptorName in spellRequest.Descriptors)
             {
@@ -145,6 +155,10 @@ public class SpellController : ControllerBase
                 spell.Descriptors?.Add(descriptorEntity);
             }
         }
+        return spell;
+    }
+    private async Task<Spell> SetClassForSpell(Spell spell, SpellRequest spellRequest)
+    {
 
         foreach (var classLevel in spellRequest.ClassSpells.Select(cs => new KeyValuePair<string, int>(cs.ClassName, cs.Level)))
         {
@@ -156,21 +170,13 @@ public class SpellController : ControllerBase
             }
             var classSpell = new ClassSpell()
             {
-                Class = classEntity,
+                Class   = classEntity,
                 ClassId = classEntity.Id,
-                Level = classLevel.Value,
+                Level   = classLevel.Value,
             };
             spell.ClassSpells.Add(classSpell);
         }
-
-        _context.Spell.Add(spell);
-
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetSpell), new
-        {
-            id = spell.Id,
-        }, spellRequest);
+        return spell;
     }
 
     // DELETE: api/Spell/5
