@@ -197,21 +197,20 @@ public class SpellController : ControllerBase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteSpell(int id)
-    {
-        var spell = await _context.Spell.FindAsync(id);
-        if (spell == null)
-        {
-            return NotFound();
-        }
-
-        _context.Spell.Remove(spell);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
+    // [HttpDelete("{id}")]
+    // public async Task<IActionResult> DeleteSpell(int id)
+    // {
+    //     var spell = await _context.Spell.FindAsync(id);
+    //     if (spell == null)
+    //     {
+    //         return NotFound();
+    //     }
+    //
+    //     _context.Spell.Remove(spell);
+    //     await _context.SaveChangesAsync();
+    //
+    //     return NoContent();
+    // }
     private bool SpellExists(int id)
     {
         return _context.Spell.Any(e => e.Id == id);
