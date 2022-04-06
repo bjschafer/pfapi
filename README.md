@@ -8,6 +8,11 @@ All system content is available under the OGL. All code is licensed under the te
 
 The API is largely self-documenting via Swagger. Check it out at https://pfapi.whizkid.dev/swagger
 
+## Running locally
+
+You'll need to adjust database connection settings -- see `Program.cs` for details on what it's looking for. Currently
+we assume Postgres, but sqlite should work if you rebuild the migrations.
+
 ## OGL
 
 > Open Game License Version 1.0a
