@@ -12,7 +12,7 @@ help:
 	@echo "    run          - runs a local environment"
 
 docker-build:
-	docker build api -t pfapi:latest
+	docker build -f api/Dockerfile api -t pfapi:latest
 
 docker-run: docker-build
 	docker run -it --rm -d -p 8080:80 pfapi:latest
@@ -30,3 +30,4 @@ run:
 
 clean:
 	rm -r ./api/bin/* ./api/obj/*
+	rm -r './Data Helper/bin/'* './Data Helper/obj/'*

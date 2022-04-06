@@ -9,35 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var cb = new DbConnectionStringBuilder
-{
-    {
-        "Username", Misc.AppSettingOrEnv(builder.Configuration, "Database:Username")
-    },
-    {
-        "Password", Misc.AppSettingOrEnv(builder.Configuration, "Database:Password")
-    },
-    {
-        "Host", Misc.AppSettingOrEnv(builder.Configuration, "Database:Host")
-    },
-    {
-        "Port", Misc.AppSettingOrEnv(builder.Configuration, "Database:Port")
-    },
-    {
-        "Database", Misc.AppSettingOrEnv(builder.Configuration, "Database:Database")
-    },
-    {
-        "SSL Mode", Misc.AppSettingOrEnv(builder.Configuration, "Database:SslMode", "Prefer")
-    },
-    {
-        "Trust Server Certificate", true
-    },
-    {
-        "Include Error Detail", true
-    },
-};
-
-switch (Misc.AppSettingOrEnv(builder.Configuration, "Database:Type", "sqlite"))
+switch (Misc.AppSettingOrEnv(builder.Configuration, "Database:Type", "postgres"))
 {
 
     case "sqlite":
@@ -47,6 +19,33 @@ switch (Misc.AppSettingOrEnv(builder.Configuration, "Database:Type", "sqlite"))
         break;
     case "postgres":
     default:
+        var cb = new DbConnectionStringBuilder
+        {
+            {
+                "Username", Misc.AppSettingOrEnv(builder.Configuration, "Database:Username")
+            },
+            {
+                "Password", Misc.AppSettingOrEnv(builder.Configuration, "Database:Password")
+            },
+            {
+                "Host", Misc.AppSettingOrEnv(builder.Configuration, "Database:Host")
+            },
+            {
+                "Port", Misc.AppSettingOrEnv(builder.Configuration, "Database:Port")
+            },
+            {
+                "Database", Misc.AppSettingOrEnv(builder.Configuration, "Database:Database")
+            },
+            {
+                "SSL Mode", Misc.AppSettingOrEnv(builder.Configuration, "Database:SslMode", "Prefer")
+            },
+            {
+                "Trust Server Certificate", true
+            },
+            {
+                "Include Error Detail", true
+            },
+        };
         builder.Services.AddDbContext<ApiContext>(options =>
                                                       options.UseNpgsql(cb.ConnectionString)
         );
