@@ -9,6 +9,7 @@ docker-build:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
+    - cd api/
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
         tag=""
@@ -17,7 +18,8 @@ docker-build:
         tag=":$CI_COMMIT_REF_SLUG"
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
-    - docker build -f api/Dockerfile --pull -t "$CI_REGISTRY_IMAGE${tag}" .
+  # the $CI_JOB_ID variable is predefined, unique across the instance, and monotonically increasing
+    - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" -t "${CI_REGISTRY_IMAGE}:${CI_JOB_ID}" .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
   # Run this job in a branch where a Dockerfile exists
   rules:
