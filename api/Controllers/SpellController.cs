@@ -27,32 +27,53 @@ public class SpellController : ControllerBase
         _logger  = logger;
     }
 
+    private string? ValidatePagination(int page, int limit)
+    {
+        if (page < 1)
+        {
+            return $"Invalid page {page}: must be greater than zero.";
+        }
+        if (limit > 100)
+        {
+            return $"Limit {limit} too high; keep it below 100";
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Get all spells
     /// </summary>
     /// <returns>A JSON list containing all spells in the database</returns>
+    /// <param name="page">Page number of results to get</param>
+    /// <param name="limit">Number of results to return (max 100)</param>
+    /// <response code="200">Returns up to limit spells</response>
+    /// <response code="400">Error validating parameters -- keep limit below 100</response>
     [HttpGet]
-    public async Task<ActionResult<List<SpellResponse>>> GetSpell()
+    public async Task<ActionResult<List<SpellResponse>>> GetSpell(int page = 1, int limit = 20)
     {
+        var validPagination = ValidatePagination(page, limit);
+        if (validPagination is not null)
+        {
+            return BadRequest(validPagination);
+        }
         var spells = await _context.Spell
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
                                    .Include(s => s.ClassSpells)
                                    .ThenInclude(cs => cs.Class)
+                                   .Skip((page - 1) * limit)
+                                   .Take(limit)
                                    .ToListAsync();
         var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
     }
 
     /// <summary>
-    /// Get a spell with a specific ID
+    /// Get a spell with a specific name
     /// </summary>
     /// <param name="name">The spell's exact name</param>
     /// <returns>A JSON object representing the given spell, if it exists</returns>
-    /// <remarks>
-    /// This is probably only useful if you've stored the ID in your client app
-    /// and want to quickly fetch data on the spell
-    /// </remarks>
     /// <response code="200">Returns the spell</response>
     /// <response code="404">Spell with given ID not found</response>
     [HttpGet("{id:int}")]
@@ -79,12 +100,20 @@ public class SpellController : ControllerBase
     /// Get all spells on a given class list
     /// </summary>
     /// <param name="className">Class to search for, e.g. Wizard</param>
+    /// <param name="page">Page number of results to get</param>
+    /// <param name="limit">Number of results to return (max 100)</param>
     /// <returns>Spells that class can cast</returns>
-    /// <response code="200">Returns all requested spells</response>
+    /// <response code="200">Returns requested spells, up to limit</response>
+    /// <response code="400">Error validating parameters -- keep limit below 100</response>
     /// <response code="404">The class you specified wasn't found</response>
     [HttpGet("Class/{className}")]
-    public async Task<ActionResult<List<SpellResponse>>> GetSpellsByClass(string className)
+    public async Task<ActionResult<List<SpellResponse>>> GetSpellsByClass(string className, int page = 1, int limit = 20)
     {
+        var validPagination = ValidatePagination(page, limit);
+        if (validPagination is not null)
+        {
+            return BadRequest(validPagination);
+        }
         var desiredClass = await _context.Class
                                          .FirstOrDefaultAsync(c => c.Name.ToLower() == className.ToLower());
         if (desiredClass is null)
@@ -98,6 +127,8 @@ public class SpellController : ControllerBase
                                    .Include(s => s.ClassSpells)
                                    .ThenInclude(cs => cs.Class)
                                    .Where(s => s.Classes.Contains(desiredClass))
+                                   .Skip((page - 1) * limit)
+                                   .Take(limit)
                                    .ToListAsync();
         var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
