@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using api.Data;
 
 #nullable disable
@@ -11,23 +12,29 @@ using api.Data;
 namespace api.Migrations
 {
     [DbContext(typeof(ApiContext))]
-    [Migration("20220125044815_initial")]
-    partial class initial
+    [Migration("20220406043311_initial-pgsql")]
+    partial class initialpgsql
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("api.Models.Class", b =>
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("api.Models.Database.Class", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -171,37 +178,31 @@ namespace api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("api.Models.ClassLevel", b =>
+            modelBuilder.Entity("api.Models.Database.ClassSpell", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("ClassId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SpellId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Level")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
-                    b.Property<int?>("SpellId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClassId");
+                    b.HasKey("ClassId", "SpellId");
 
                     b.HasIndex("SpellId");
 
-                    b.ToTable("ClassLevel");
+                    b.ToTable("ClassSpell");
                 });
 
-            modelBuilder.Entity("api.Models.Descriptor", b =>
+            modelBuilder.Entity("api.Models.Database.Descriptor", b =>
                 {
                     b.Property<string>("Name")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("Id")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("Name");
 
@@ -280,6 +281,11 @@ namespace api.Migrations
                         },
                         new
                         {
+                            Name = "Figment",
+                            Id = 57
+                        },
+                        new
+                        {
                             Name = "Fire",
                             Id = 43
                         },
@@ -295,7 +301,7 @@ namespace api.Migrations
                         },
                         new
                         {
-                            Name = "LanguageDependent",
+                            Name = "Language-Dependent",
                             Id = 46
                         },
                         new
@@ -315,7 +321,7 @@ namespace api.Migrations
                         },
                         new
                         {
-                            Name = "MindAffecting",
+                            Name = "Mind-Affecting",
                             Id = 50
                         },
                         new
@@ -350,127 +356,137 @@ namespace api.Migrations
                         });
                 });
 
-            modelBuilder.Entity("api.Models.SourceMaterial", b =>
+            modelBuilder.Entity("api.Models.Database.SourceMaterial", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("SourceMaterial");
                 });
 
-            modelBuilder.Entity("api.Models.Spell", b =>
+            modelBuilder.Entity("api.Models.Database.Spell", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Area")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Bloodline")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("CastingTime")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
+
+                    b.Property<string>("ComponentDetails")
+                        .HasColumnType("text");
 
                     b.Property<string>("Deity")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Domain")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Duration")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Effect")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("HasCostlyComponents")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("HasDivineFocusComponent")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("HasFocusComponent")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("HasMaterialComponent")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("HasSomaticComponent")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("HasVerbalComponent")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<string>("HauntStatistics")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDismissable")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsMythic")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsShapeable")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("boolean");
 
                     b.Property<int?>("MaterialCosts")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("MythicAugmented")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("MythicText")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Patron")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Range")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("SavingThrow")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("School")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("SourceId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<string>("SpellResistance")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Subschool")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Summary")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<string>("Targets")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("SourceId");
 
@@ -480,10 +496,10 @@ namespace api.Migrations
             modelBuilder.Entity("DescriptorSpell", b =>
                 {
                     b.Property<string>("DescriptorsName")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("text");
 
                     b.Property<int>("SpellsId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("DescriptorsName", "SpellsId");
 
@@ -492,24 +508,28 @@ namespace api.Migrations
                     b.ToTable("DescriptorSpell");
                 });
 
-            modelBuilder.Entity("api.Models.ClassLevel", b =>
+            modelBuilder.Entity("api.Models.Database.ClassSpell", b =>
                 {
-                    b.HasOne("api.Models.Class", "Class")
-                        .WithMany()
+                    b.HasOne("api.Models.Database.Class", "Class")
+                        .WithMany("ClassSpells")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("api.Models.Spell", null)
-                        .WithMany("ClassLevels")
-                        .HasForeignKey("SpellId");
+                    b.HasOne("api.Models.Database.Spell", "Spell")
+                        .WithMany("ClassSpells")
+                        .HasForeignKey("SpellId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Class");
+
+                    b.Navigation("Spell");
                 });
 
-            modelBuilder.Entity("api.Models.Spell", b =>
+            modelBuilder.Entity("api.Models.Database.Spell", b =>
                 {
-                    b.HasOne("api.Models.SourceMaterial", "Source")
+                    b.HasOne("api.Models.Database.SourceMaterial", "Source")
                         .WithMany()
                         .HasForeignKey("SourceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -520,22 +540,27 @@ namespace api.Migrations
 
             modelBuilder.Entity("DescriptorSpell", b =>
                 {
-                    b.HasOne("api.Models.Descriptor", null)
+                    b.HasOne("api.Models.Database.Descriptor", null)
                         .WithMany()
                         .HasForeignKey("DescriptorsName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("api.Models.Spell", null)
+                    b.HasOne("api.Models.Database.Spell", null)
                         .WithMany()
                         .HasForeignKey("SpellsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("api.Models.Spell", b =>
+            modelBuilder.Entity("api.Models.Database.Class", b =>
                 {
-                    b.Navigation("ClassLevels");
+                    b.Navigation("ClassSpells");
+                });
+
+            modelBuilder.Entity("api.Models.Database.Spell", b =>
+                {
+                    b.Navigation("ClassSpells");
                 });
 #pragma warning restore 612, 618
         }

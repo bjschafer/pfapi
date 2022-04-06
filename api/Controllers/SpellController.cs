@@ -155,7 +155,7 @@ public class SpellController : ControllerBase
     }
     private async Task<Spell> SetDescriptorForSpell(Spell spell, SpellRequest spellRequest)
     {
-        if (spellRequest.Descriptors is null)
+        if (spellRequest.Descriptors is not null)
         {
             foreach (var descriptorName in spellRequest.Descriptors)
             {
