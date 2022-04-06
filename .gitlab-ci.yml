@@ -20,7 +20,7 @@ docker-build:
       fi
   # the $CI_JOB_ID variable is predefined, unique across the instance, and monotonically increasing
     - docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" -t "${CI_REGISTRY_IMAGE}:${CI_JOB_ID}" .
-    - docker push "$CI_REGISTRY_IMAGE${tag}"
+    - docker push --all-tags "$CI_REGISTRY_IMAGE" 
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_COMMIT_BRANCH
