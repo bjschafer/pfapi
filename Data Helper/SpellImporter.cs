@@ -162,37 +162,4 @@ public static class SpellImporter
         // and then tolower
         return string.Concat((input ?? string.Empty).Select((x, i) => i > 0 && char.IsUpper(x) && !char.IsUpper(input[i - 1]) ? $"_{x}" : x.ToString())).ToLower();
     }
-
-    /*
-     * def validate_class(class_name: str):
-    if class_name not in valid_classes:
-        raise ValueError(f"ERROR: {class_name} not on list of valid classes")
-
-
-def parse_classes(raw: str) -> Dict[str, int]:
-    """
-    the class field is 1 or more pairs of the format
-    Class1(/Class2)? [0-9] separated by commas
-    :param raw: the raw field from the CSV
-    :return: A list of class/level pairs
-    """
-    ret: Dict[str, int] = {}
-
-    for classes_level in raw.split(','):
-        class_name, spell_level = classes_level.split(' ')
-        if '/' in class_name:
-            class1, class2 = class_name.split('/')
-            validate_class(class1)
-            validate_class(class2)
-            ret[class1] = spell_level
-            ret[class2] = spell_level
-        else:
-            validate_class(class_name)
-            ret[class_name] = spell_level
-
-    return ret
-
-def parse_components(raw: str) ->
-
-     */
 }
