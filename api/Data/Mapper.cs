@@ -17,21 +17,21 @@ public class Mapper : Profile
            .ConstructUsing(d => d.Name);
         CreateMap<SourceMaterial, SourceMaterialResponse>();
         CreateMap<string, SourceMaterial>()
-           .ConstructUsing(s => new()
+           .ConstructUsing(s => new SourceMaterial
             {
                 Name = s,
             });
 
         CreateMap<SpellRequest, Spell>();
         CreateMap<KeyValuePair<string, int>, ClassLevel>()
-           .ConstructUsing(kvp => new()
+           .ConstructUsing(kvp => new ClassLevel
                 {
                     ClassName = kvp.Key,
-                    Level = kvp.Value,
+                    Level     = kvp.Value,
                 }
             );
         CreateMap<string, Descriptor>()
-           .ConstructUsing(s => new Descriptor()
+           .ConstructUsing(s => new Descriptor
             {
                 Name = s,
             });

@@ -1,12 +1,4 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
-
-using api.Models.Database;
-
-using AutoMapper;
-
 using RestSharp;
 using RestSharp.Serializers;
 
@@ -33,7 +25,7 @@ internal class Program
         //
         // Console.WriteLine($"Found and imported {csvSpells.Count()} spells.");
 
-        IEnumerable<string> spellsAsJson = csvSpells.Select(c => c.ToApiJsonObject());
+        var spellsAsJson = csvSpells.Select(c => c.ToApiJsonObject());
         await PostToApi(spellsAsJson);
     }
 
@@ -41,7 +33,7 @@ internal class Program
     {
         var client = new RestClient(_api_base);
 
-        foreach (string spell in spellsAsJson)
+        foreach (var spell in spellsAsJson)
         {
             Console.WriteLine(spell);
             var request = new RestRequest("Spell");

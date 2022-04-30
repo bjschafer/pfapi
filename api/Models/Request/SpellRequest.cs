@@ -1,28 +1,16 @@
-using api.Models.Response;
-
 namespace api.Models.Request;
 
 public class SpellRequest
 {
-#region Overrides of Object
-
-    /// <inheritdoc />
-    public override string ToString()
-    {
-        return this.Name;
-    }
-
-#endregion
-
-    public          string Name { get; set; }
+    public string Name { get; set; }
 
     public string Description { get; set; }
     public string Summary     { get; set; }
 
-    public List<string>? Descriptors { get; set; }
+    public List<string>?           Descriptors     { get; set; }
     public Dictionary<string, int> ClassLevels     { get; set; }
-    public string?                         SpellResistance { get; set; }
-    public string?                         SavingThrow     { get; set; }
+    public string?                 SpellResistance { get; set; }
+    public string?                 SavingThrow     { get; set; }
 
     public bool HasDivineFocusComponent { get; set; }
     public bool HasFocusComponent       { get; set; }
@@ -58,4 +46,14 @@ public class SpellRequest
     public string? Subschool { get; set; }
 
     public string Source { get; set; }
+
+#region Overrides of Object
+
+    /// <inheritdoc />
+    public override string ToString()
+    {
+        return Name;
+    }
+
+#endregion
 }

@@ -4,7 +4,6 @@ using api.Models.Request;
 using api.Models.Response;
 
 using AutoMapper;
-using AutoMapper.QueryableExtensions;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,8 +15,8 @@ namespace api.Controllers;
 public class SpellController : ControllerBase
 {
     private readonly ApiContext               _context;
-    private readonly IMapper                  _mapper;
     private readonly ILogger<SpellController> _logger;
+    private readonly IMapper                  _mapper;
 
     public SpellController(ApiContext context, IMapper mapper, ILogger<SpellController> logger)
     {
@@ -41,7 +40,7 @@ public class SpellController : ControllerBase
     }
 
     /// <summary>
-    /// Get all spells
+    ///     Get all spells
     /// </summary>
     /// <returns>A JSON list containing all spells in the database</returns>
     /// <param name="page">Page number of results to get</param>
@@ -67,7 +66,7 @@ public class SpellController : ControllerBase
     }
 
     /// <summary>
-    /// Get a spell with a specific name
+    ///     Get a spell with a specific name
     /// </summary>
     /// <param name="name">The spell's exact name</param>
     /// <returns>A JSON object representing the given spell, if it exists</returns>
@@ -92,9 +91,10 @@ public class SpellController : ControllerBase
     }
 
     /// <summary>
-    /// Get all spells on a given class list
+    ///     Get all spells on a given class list
     /// </summary>
     /// <param name="className">Class to search for, e.g. Wizard</param>
+    /// <param name="level">Optional class level to filter down to</param>
     /// <param name="page">Page number of results to get</param>
     /// <param name="limit">Number of results to return (max 100)</param>
     /// <returns>Spells that class can cast</returns>
@@ -102,7 +102,7 @@ public class SpellController : ControllerBase
     /// <response code="400">Error validating parameters -- keep limit below 100</response>
     /// <response code="404">The class you specified wasn't found</response>
     [HttpGet("Class/{className}")]
-    public async Task<ActionResult<List<SpellResponse>>> GetSpellsByClass(string className, int page = 1, int limit = 20)
+    public async Task<ActionResult<List<SpellResponse>>> GetSpellsByClass(string className, int? level, int page = 1, int limit = 20)
     {
         var validPagination = ValidatePagination(page, limit);
         if (validPagination is not null)
@@ -116,19 +116,33 @@ public class SpellController : ControllerBase
             return NotFound($"Class {className} not found");
         }
 
-        var spells = await _context.Spell
+        List<Spell> spells;
+        if (level is null)
+        {
+            spells = await _context.Spell
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
                                    .Where(s => s.ClassLevels.Any(cl => cl.ClassName == className))
                                    .Skip((page - 1) * limit)
                                    .Take(limit)
                                    .ToListAsync();
+        }
+        else
+        {
+            spells = await _context.Spell
+                                   .Include(s => s.Descriptors)
+                                   .Include(s => s.Source)
+                                   .Where(s => s.ClassLevels.Any(cl => cl.ClassName == className && cl.Level == level))
+                                   .Skip((page - 1) * limit)
+                                   .Take(limit)
+                                   .ToListAsync();
+        }
         var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
     }
 
     /// <summary>
-    /// Update a spell
+    ///     Update a spell
     /// </summary>
     /// <param name="id"></param>
     /// <param name="spellRequest"></param>
@@ -149,7 +163,7 @@ public class SpellController : ControllerBase
     }
 
     /// <summary>
-    /// Create a new spell
+    ///     Create a new spell
     /// </summary>
     /// <param name="spellRequest"></param>
     /// <returns></returns>
@@ -195,7 +209,7 @@ public class SpellController : ControllerBase
     }
 
     /// <summary>
-    /// Remove a spell
+    ///     Remove a spell
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>

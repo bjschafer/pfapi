@@ -9,7 +9,7 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<CsvSpell, Spell>()
-            .ForMember(
+           .ForMember(
                 dest => dest.HasCostlyComponents,
                 opt => opt.MapFrom(src => src.CostlyComponents)
             )

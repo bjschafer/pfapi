@@ -1,4 +1,3 @@
-using System.Configuration;
 using System.Data.Common;
 using System.Reflection;
 
@@ -6,6 +5,7 @@ using api.Data;
 using api.Utils;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,7 +62,13 @@ builder.Services.AddSwaggerGen(c =>
     {
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+        c.SwaggerDoc("v1alpha1", new OpenApiInfo
+        {
+            Title   = "PF1e API",
+            Version = "v1alpha1",
+        });
     });
+
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -73,7 +79,11 @@ var app = builder.Build();
 // if (app.Environment.IsDevelopment())
 // {
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1alpha1/swagger.json", "v1alpha1");
+        options.RoutePrefix = string.Empty;
+    });
 // }
 
 // app.UseHttpsRedirection(); // this is handled by the reverse proxy

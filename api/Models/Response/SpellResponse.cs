@@ -9,9 +9,9 @@ public class SpellResponse
 
     public List<string>? Descriptors { get; set; }
     // public Dictionary<Class, int> ClassLevels     { get; set; }
-    public Dictionary<string, int>  ClassLevels     { get; set; }
-    public string?                  SpellResistance { get; set; }
-    public string?                  SavingThrow     { get; set; }
+    public Dictionary<string, int> ClassLevels     { get; set; }
+    public string?                 SpellResistance { get; set; }
+    public string?                 SavingThrow     { get; set; }
 
     public bool HasDivineFocusComponent { get; set; }
     public bool HasFocusComponent       { get; set; }

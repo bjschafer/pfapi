@@ -83,9 +83,15 @@ public static class SpellImporter
                               .Replace("see text", "")
                               .Replace(";", "")
                               .Trim();
-            if (cleanSegment == "law") cleanSegment   = "lawful";
-            if (cleanSegment == "chaos") cleanSegment = "chaotic";
-            if (!String.IsNullOrWhiteSpace(cleanSegment))
+            if (cleanSegment == "law")
+            {
+                cleanSegment = "lawful";
+            }
+            if (cleanSegment == "chaos")
+            {
+                cleanSegment = "chaotic";
+            }
+            if (!string.IsNullOrWhiteSpace(cleanSegment))
             {
                 ret.Add(cleanSegment);
             }
