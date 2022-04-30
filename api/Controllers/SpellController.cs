@@ -47,23 +47,23 @@ public class SpellController : ControllerBase
     /// <param name="limit">Number of results to return (max 100)</param>
     /// <response code="200">Returns up to limit spells</response>
     /// <response code="400">Error validating parameters -- keep limit below 100</response>
-    [HttpGet]
-    public async Task<ActionResult<List<SpellResponse>>> GetSpell(int page = 1, int limit = 20)
-    {
-        var validPagination = ValidatePagination(page, limit);
-        if (validPagination is not null)
-        {
-            return BadRequest(validPagination);
-        }
-        var spells = await _context.Spell
-                                   .Include(s => s.Descriptors)
-                                   .Include(s => s.Source)
-                                   .Skip((page - 1) * limit)
-                                   .Take(limit)
-                                   .ToListAsync();
-        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
-        return Ok(mappedSpells);
-    }
+//    [HttpGet]
+//    public async Task<ActionResult<List<SpellResponse>>> GetSpell(int page = 1, int limit = 20)
+//    {
+//        var validPagination = ValidatePagination(page, limit);
+//        if (validPagination is not null)
+//        {
+//            return BadRequest(validPagination);
+//        }
+//        var spells = await _context.Spell
+//                                   .Include(s => s.Descriptors)
+//                                   .Include(s => s.Source)
+//                                   .Skip((page - 1) * limit)
+//                                   .Take(limit)
+//                                   .ToListAsync();
+//        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
+//        return Ok(mappedSpells);
+//    }
 
     /// <summary>
     ///     Get a spell with a specific name
@@ -88,6 +88,53 @@ public class SpellController : ControllerBase
         }
 
         return Ok(_mapper.Map<SpellResponse>(spell));
+    }
+
+    private async Task<Class?> ValidateClass(string? className)
+    {
+        if (className is not null)
+        {
+            return await _context.Class
+                                 .FirstOrDefaultAsync(c => c.Name.ToLower() == className.ToLower());
+        }
+        return null!;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<SpellResponse>>> FindSpells(string? className, int? level, string? school, int page = 1, int limit = 20)
+    {
+        var validPagination = ValidatePagination(page, limit);
+        if (validPagination is not null)
+        {
+            return BadRequest(validPagination);
+        }
+
+        var desiredClass = await ValidateClass(className);
+        if (desiredClass is null && className is not null)
+        {
+            return NotFound($"Class {className} not found");
+        }
+        IQueryable<Spell?> lazySpells = _context.Spell;
+        if (desiredClass is not null)
+        {
+            lazySpells = lazySpells.Where(s => s.ClassLevels.Any(cl => cl.ClassName.ToLower() == className.ToLower()));
+        }
+        if (level.HasValue)
+        {
+            lazySpells = lazySpells.Where(s => s.ClassLevels.Any(cl => cl.Level == level));
+        }
+        if (school is not null)
+        {
+            lazySpells = lazySpells.Where(s => s.School.ToLower() == school.ToLower());
+        }
+        var spells = await lazySpells.Include(s => s.Descriptors)
+                                     .Include(s => s.Source)
+                                     .Skip((page - 1) * limit)
+                                     .Take(limit)
+                                     .ToListAsync();
+
+        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
+        return Ok(mappedSpells);
     }
 
     /// <summary>
