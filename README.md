@@ -2,6 +2,8 @@
 
 A simple way to interact with spells and monsters.
 
+**Note that while the API is in alpha, anything may change at any time!**
+
 All system content is available under the OGL. All code is licensed under the terms in LICENSE.
 
 ## Documentation

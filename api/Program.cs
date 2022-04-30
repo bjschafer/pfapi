@@ -69,7 +69,6 @@ builder.Services.AddSwaggerGen(c =>
         });
     });
 
-
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
