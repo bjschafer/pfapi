@@ -40,66 +40,16 @@ public class SpellController : ControllerBase
     }
 
     /// <summary>
-    ///     Get all spells
+    ///  Find spells
     /// </summary>
     /// <returns>A JSON list containing all spells in the database</returns>
+    /// <param name="className">Optional class to filter by</param>
+    /// <param name="level">Optional spell level to filter by</param>
+    /// <param name="school">Optional school name to filter by</param>
     /// <param name="page">Page number of results to get</param>
     /// <param name="limit">Number of results to return (max 100)</param>
     /// <response code="200">Returns up to limit spells</response>
     /// <response code="400">Error validating parameters -- keep limit below 100</response>
-//    [HttpGet]
-//    public async Task<ActionResult<List<SpellResponse>>> GetSpell(int page = 1, int limit = 20)
-//    {
-//        var validPagination = ValidatePagination(page, limit);
-//        if (validPagination is not null)
-//        {
-//            return BadRequest(validPagination);
-//        }
-//        var spells = await _context.Spell
-//                                   .Include(s => s.Descriptors)
-//                                   .Include(s => s.Source)
-//                                   .Skip((page - 1) * limit)
-//                                   .Take(limit)
-//                                   .ToListAsync();
-//        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
-//        return Ok(mappedSpells);
-//    }
-
-    /// <summary>
-    ///     Get a spell with a specific name
-    /// </summary>
-    /// <param name="name">The spell's exact name</param>
-    /// <returns>A JSON object representing the given spell, if it exists</returns>
-    /// <response code="200">Returns the spell</response>
-    /// <response code="404">Spell with given ID not found</response>
-    [HttpGet("{name}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<SpellResponse>> GetSpell(string name)
-    {
-        var spell = await _context.Spell
-                                  .Include(s => s.Descriptors)
-                                  .Include(s => s.Source)
-                                  .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
-
-        if (spell == null)
-        {
-            return NotFound();
-        }
-
-        return Ok(_mapper.Map<SpellResponse>(spell));
-    }
-
-    private async Task<Class?> ValidateClass(string? className)
-    {
-        if (className is not null)
-        {
-            return await _context.Class
-                                 .FirstOrDefaultAsync(c => c.Name.ToLower() == className.ToLower());
-        }
-        return null!;
-    }
-
     [HttpGet]
     public async Task<ActionResult<List<SpellResponse>>> FindSpells(string? className, int? level, string? school, int page = 1, int limit = 20)
     {
@@ -135,6 +85,41 @@ public class SpellController : ControllerBase
 
         var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
+    }
+
+    /// <summary>
+    ///     Get a spell with a specific name
+    /// </summary>
+    /// <param name="name">The spell's exact name</param>
+    /// <returns>A JSON object representing the given spell, if it exists</returns>
+    /// <response code="200">Returns the spell</response>
+    /// <response code="404">Spell with given ID not found</response>
+    [HttpGet("{name}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<SpellResponse>> GetSpell(string name)
+    {
+        var spell = await _context.Spell
+                                  .Include(s => s.Descriptors)
+                                  .Include(s => s.Source)
+                                  .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
+
+        if (spell == null)
+        {
+            return NotFound();
+        }
+
+        return Ok(_mapper.Map<SpellResponse>(spell));
+    }
+
+    private async Task<Class?> ValidateClass(string? className)
+    {
+        if (className is not null)
+        {
+            return await _context.Class
+                                 .FirstOrDefaultAsync(c => c.Name.ToLower() == className.ToLower());
+        }
+        return null!;
     }
 
     /// <summary>
