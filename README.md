@@ -6,7 +6,7 @@ All system content is available under the OGL. All code is licensed under the te
 
 ## Documentation
 
-The API is largely self-documenting via Swagger. Check it out at https://pfapi.whizkid.dev/swagger
+The API is largely self-documenting via Swagger. Check it out at https://pfapi.whizkid.dev/
 
 ## Running locally
 
