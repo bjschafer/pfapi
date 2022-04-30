@@ -20,7 +20,7 @@ public class SpellRequest
     public string Summary     { get; set; }
 
     public List<string>? Descriptors { get; set; }
-    public List<ClassSpellRequest> ClassSpells     { get; set; }
+    public Dictionary<string, int> ClassLevels     { get; set; }
     public string?                         SpellResistance { get; set; }
     public string?                         SavingThrow     { get; set; }
 

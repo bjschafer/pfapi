@@ -28,7 +28,7 @@ public static class SpellImporter
             Area                    = csvSpell.Area,
             Bloodline               = csvSpell.Bloodline,
             CastingTime             = csvSpell.CastingTime,
-            ClassSpells             = ParseClasses(csvSpell),
+            ClassLevels             = ParseClasses(csvSpell),
             SpellResistance         = csvSpell.SpellResistance,
             SavingThrow             = csvSpell.SavingThrow,
             HasDivineFocusComponent = csvSpell.DivineFocus,
@@ -98,9 +98,9 @@ public static class SpellImporter
         return ret;
     }
 
-    public static List<ClassSpellRequest> ParseClasses(CsvSpell raw)
+    public static Dictionary<string, int> ParseClasses(CsvSpell raw)
     {
-        var classes         = new List<ClassSpellRequest>();
+        var classes         = new Dictionary<string, int>();
         var csvSpellType    = typeof(CsvSpell);
         var classProperties = csvSpellType.GetProperties().Where(p => p.PropertyType == typeof(int?));
 
@@ -116,11 +116,7 @@ public static class SpellImporter
             {
                 var spellLevel = Convert.ToInt32(level);
 
-                classes.Add(new ClassSpellRequest
-                {
-                    ClassName = className,
-                    Level     = spellLevel,
-                });
+                classes.Add(className, spellLevel);
             }
         }
 

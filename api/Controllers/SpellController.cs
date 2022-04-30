@@ -1,4 +1,3 @@
-#nullable disable
 using api.Data;
 using api.Models.Database;
 using api.Models.Request;
@@ -60,8 +59,6 @@ public class SpellController : ControllerBase
         var spells = await _context.Spell
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
-                                   .Include(s => s.ClassSpells)
-                                   .ThenInclude(cs => cs.Class)
                                    .Skip((page - 1) * limit)
                                    .Take(limit)
                                    .ToListAsync();
@@ -84,8 +81,6 @@ public class SpellController : ControllerBase
         var spell = await _context.Spell
                                   .Include(s => s.Descriptors)
                                   .Include(s => s.Source)
-                                  .Include(s => s.ClassSpells)
-                                  .ThenInclude(cs => cs.Class)
                                   .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
 
         if (spell == null)
@@ -124,9 +119,7 @@ public class SpellController : ControllerBase
         var spells = await _context.Spell
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
-                                   .Include(s => s.ClassSpells)
-                                   .ThenInclude(cs => cs.Class)
-                                   .Where(s => s.Classes.Contains(desiredClass))
+                                   .Where(s => s.ClassLevels.Any(cl => cl.ClassName == className))
                                    .Skip((page - 1) * limit)
                                    .Take(limit)
                                    .ToListAsync();
@@ -164,6 +157,7 @@ public class SpellController : ControllerBase
     public async Task<ActionResult<Spell>> PostSpell([FromBody] SpellRequest spellRequest)
     {
         var spell = await MapSpellRequestToSpell(spellRequest);
+        // TODO validate classes contained are valid
 
         _context.Spell.Add(spell);
 
@@ -177,11 +171,9 @@ public class SpellController : ControllerBase
     private async Task<Spell> MapSpellRequestToSpell(SpellRequest spellRequest)
     {
         var spell = _mapper.Map<Spell>(spellRequest);
-        spell.ClassSpells.Clear();
         spell.Descriptors?.Clear();
 
         spell = await SetDescriptorForSpell(spell, spellRequest);
-        spell = await SetClassForSpell(spell, spellRequest);
         return spell;
     }
     private async Task<Spell> SetDescriptorForSpell(Spell spell, SpellRequest spellRequest)
@@ -198,27 +190,6 @@ public class SpellController : ControllerBase
                 }
                 spell.Descriptors?.Add(descriptorEntity);
             }
-        }
-        return spell;
-    }
-    private async Task<Spell> SetClassForSpell(Spell spell, SpellRequest spellRequest)
-    {
-
-        foreach (var classLevel in spellRequest.ClassSpells.Select(cs => new KeyValuePair<string, int>(cs.ClassName, cs.Level)))
-        {
-            var classEntity = await _context.Class.FirstOrDefaultAsync(c => c.Name == classLevel.Key);
-            if (classEntity is null)
-            {
-                _logger.LogError("Couldn't find a class for {Class}", classLevel.Key);
-                continue;
-            }
-            var classSpell = new ClassSpell()
-            {
-                Class   = classEntity,
-                ClassId = classEntity.Id,
-                Level   = classLevel.Value,
-            };
-            spell.ClassSpells.Add(classSpell);
         }
         return spell;
     }

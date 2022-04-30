@@ -15,6 +15,7 @@ namespace Data_Helper;
 internal class Program
 {
     private static readonly string _api_base = "http://localhost:5252/api";
+    // private static readonly string _api_base = "https://pfapi.cmdcentral.xyz/api";
     private static async Task Main(string[] args)
     {
         // maybe someday i'll make this great. for now it's gonna suck :)

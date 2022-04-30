@@ -10,9 +10,9 @@ public class Mapper : Profile
 {
     public Mapper()
     {
-        CreateMap<Spell, SpellResponse>()
-           .ForMember(dest => dest.ClassLevels, opt => opt.MapFrom(src => src.ClassSpells));
-        CreateMap<ClassSpell, ClassSpellResponse>();
+        CreateMap<Spell, SpellResponse>();
+        CreateMap<ClassLevel, KeyValuePair<string, int>>()
+           .ConstructUsing(cl => new KeyValuePair<string, int>(cl.ClassName, cl.Level));
         CreateMap<Descriptor, string>()
            .ConstructUsing(d => d.Name);
         CreateMap<SourceMaterial, SourceMaterialResponse>();
@@ -22,8 +22,14 @@ public class Mapper : Profile
                 Name = s,
             });
 
-        CreateMap<ClassSpellRequest, ClassSpell>();
         CreateMap<SpellRequest, Spell>();
+        CreateMap<KeyValuePair<string, int>, ClassLevel>()
+           .ConstructUsing(kvp => new()
+                {
+                    ClassName = kvp.Key,
+                    Level = kvp.Value,
+                }
+            );
         CreateMap<string, Descriptor>()
            .ConstructUsing(s => new Descriptor()
             {

@@ -13,11 +13,10 @@ public class Spell
     public string Description { get; set; }
     public string Summary     { get; set; }
 
-    public ICollection<Descriptor>? Descriptors     { get; set; }
-    public ICollection<Class>       Classes         { get; set; }
-    public List<ClassSpell>         ClassSpells     { get; set; }
-    public string?                  SpellResistance { get; set; }
-    public string?                  SavingThrow     { get; set; }
+    public ICollection<Descriptor>? Descriptors { get; set; }
+    public ICollection<ClassLevel> ClassLevels      { get; set; }
+    public string? SpellResistance              { get; set; }
+    public string? SavingThrow                  { get; set; }
 
     public bool HasDivineFocusComponent { get; set; }
     public bool HasFocusComponent       { get; set; }
