@@ -2,7 +2,7 @@ namespace api.Utils;
 
 public static class Tables
 {
-    public static Dictionary<int, int[]> BonusSpellsByAbilityMod = new Dictionary<int, int[]>
+    public static readonly Dictionary<int, int[]> BonusSpellsByAbilityMod = new Dictionary<int, int[]>
     {
         {
             0, new[]
@@ -117,5 +117,10 @@ public static class Tables
     public static int GetAbilityModifier(int score)
     {
         return (score - 10) / 2;
+    }
+    public static int GetBonusSpells(int level, int abilityScore)
+    {
+        int mod = GetAbilityModifier(abilityScore);
+        return BonusSpellsByAbilityMod[mod][level - 1];
     }
 }

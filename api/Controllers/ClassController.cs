@@ -35,7 +35,7 @@ public class ClassController : ControllerBase
     [HttpGet("{name}")]
     public async Task<ActionResult<Class>> GetClass(string name)
     {
-        var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name.ToLower() == name);
+        var @class = await _context.Class.FirstOrDefaultAsync(c => string.Equals(c.Name, name, StringComparison.CurrentCultureIgnoreCase));
 
         if (@class is null)
         {
@@ -48,19 +48,13 @@ public class ClassController : ControllerBase
     [HttpGet("{name}/SpellsPerDay")]
     public async Task<ActionResult<int>> GetSpellsPerDay(string name, int classLevel, int spellLevel, int abilityScore)
     {
-        var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name.ToLower() == name);
+        var @class = await _context.Class.FirstOrDefaultAsync(c => string.Equals(c.Name, name, StringComparison.CurrentCultureIgnoreCase));
 
         if (@class is null)
         {
             return NotFound();
         }
 
-        return getBonusSpells(spellLevel, abilityScore) + @class.SpellsPerDay?[classLevel][spellLevel];
-    }
-
-    private int getBonusSpells(int level, int abilityScore)
-    {
-        int mod = Tables.GetAbilityModifier(abilityScore);
-        return Tables.BonusSpellsByAbilityMod[mod][level - 1];
+        return Tables.GetBonusSpells(spellLevel, abilityScore) + @class.SpellsPerDay?[classLevel][spellLevel];
     }
 }

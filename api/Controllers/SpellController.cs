@@ -26,20 +26,6 @@ public class SpellController : ControllerBase
         _logger  = logger;
     }
 
-    private string? ValidatePagination(int page, int limit)
-    {
-        if (page < 1)
-        {
-            return $"Invalid page {page}: must be greater than zero.";
-        }
-        if (limit > 100)
-        {
-            return $"Limit {limit} too high; keep it below 100";
-        }
-
-        return null;
-    }
-
     /// <summary>
     ///     Find spells
     /// </summary>
@@ -55,23 +41,23 @@ public class SpellController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<List<SpellResponse>>> FindSpells(string? spellName, string? className, int? level, string? school, int page = 1, int limit = 20)
     {
-        var validPagination = ValidatePagination(page, limit);
+        var validPagination = Misc.ValidatePagination(page, limit);
         if (validPagination is not null)
         {
             return BadRequest(validPagination);
         }
 
-        var desiredClass = await ValidateClass(className);
+        var desiredClass = await validateClass(className);
         if (desiredClass is null && className is not null)
         {
             return NotFound($"Class {className} not found");
         }
         var spells = await _context.Spell
-                                   .WhereIf(desiredClass is not null && level.HasValue, s => s.ClassLevels.Any(cl => cl.ClassName.ToLower() == className!.ToLower() && cl.Level == level))
-                                   .WhereIf(desiredClass is not null, s => s.ClassLevels.Any(cl => cl.ClassName.ToLower() == className!.ToLower()))
+                                   .WhereIf(desiredClass is not null && level.HasValue, s => s.ClassLevels.Any(cl => string.Equals(cl.ClassName, className!, StringComparison.CurrentCultureIgnoreCase) && cl.Level == level))
+                                   .WhereIf(desiredClass is not null, s => s.ClassLevels.Any(cl => string.Equals(cl.ClassName, className!, StringComparison.CurrentCultureIgnoreCase)))
                                    .WhereIf(level.HasValue, s => s.ClassLevels.Any(cl => cl.Level == level))
-                                   .WhereIf(school is not null, s => s.School.ToLower() == school!.ToLower())
-                                   .WhereIf(spellName is not null, s => s.Name.ToLower().Contains(spellName!.ToLower()))
+                                   .WhereIf(school is not null, s => string.Equals(s.School, school, StringComparison.CurrentCultureIgnoreCase))
+                                   .WhereIf(spellName is not null, s => s.Name.Contains(spellName!, StringComparison.CurrentCultureIgnoreCase))
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
                                    .Skip((page - 1) * limit)
@@ -97,7 +83,7 @@ public class SpellController : ControllerBase
         var spell = await _context.Spell
                                   .Include(s => s.Descriptors)
                                   .Include(s => s.Source)
-                                  .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
+                                  .FirstOrDefaultAsync(s => string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
 
         if (spell is null)
         {
@@ -107,12 +93,12 @@ public class SpellController : ControllerBase
         return Ok(_mapper.Map<SpellResponse>(spell));
     }
 
-    private async Task<Class?> ValidateClass(string? className)
+    private async Task<Class?> validateClass(string? className)
     {
         if (className is not null)
         {
             return await _context.Class
-                                 .FirstOrDefaultAsync(c => c.Name.ToLower() == className.ToLower());
+                                 .FirstOrDefaultAsync(c => string.Equals(c.Name, className, StringComparison.CurrentCultureIgnoreCase));
         }
         return null!;
     }
@@ -131,39 +117,26 @@ public class SpellController : ControllerBase
     [HttpGet("Class/{className}")]
     public async Task<ActionResult<List<SpellResponse>>> GetSpellsByClass(string className, int? level, int page = 1, int limit = 20)
     {
-        var validPagination = ValidatePagination(page, limit);
+        var validPagination = Misc.ValidatePagination(page, limit);
         if (validPagination is not null)
         {
             return BadRequest(validPagination);
         }
         var desiredClass = await _context.Class
-                                         .FirstOrDefaultAsync(c => c.Name.ToLower() == className.ToLower());
+                                         .FirstOrDefaultAsync(c => string.Equals(c.Name, className, StringComparison.CurrentCultureIgnoreCase));
         if (desiredClass is null)
         {
             return NotFound($"Class {className} not found");
         }
 
-        List<Spell> spells;
-        if (level is null)
-        {
-            spells = await _context.Spell
+        var spells = await _context.Spell
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
-                                   .Where(s => s.ClassLevels.Any(cl => cl.ClassName == className))
+                                   .WhereIf(level is not null, s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name && cl.Level == level))
+                                   .Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name))
                                    .Skip((page - 1) * limit)
                                    .Take(limit)
                                    .ToListAsync();
-        }
-        else
-        {
-            spells = await _context.Spell
-                                   .Include(s => s.Descriptors)
-                                   .Include(s => s.Source)
-                                   .Where(s => s.ClassLevels.Any(cl => cl.ClassName == className && cl.Level == level))
-                                   .Skip((page - 1) * limit)
-                                   .Take(limit)
-                                   .ToListAsync();
-        }
         var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
     }
@@ -197,7 +170,7 @@ public class SpellController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Spell>> PostSpell([FromBody] SpellRequest spellRequest)
     {
-        var spell = await MapSpellRequestToSpell(spellRequest);
+        var spell = await mapSpellRequestToSpell(spellRequest);
         // TODO validate classes contained are valid
 
         _context.Spell.Add(spell);
@@ -209,21 +182,21 @@ public class SpellController : ControllerBase
             id = spell.Id,
         }, spellRequest);
     }
-    private async Task<Spell> MapSpellRequestToSpell(SpellRequest spellRequest)
+    private async Task<Spell> mapSpellRequestToSpell(SpellRequest spellRequest)
     {
         var spell = _mapper.Map<Spell>(spellRequest);
         spell.Descriptors?.Clear();
 
-        spell = await SetDescriptorForSpell(spell, spellRequest);
+        spell = await setDescriptorForSpell(spell, spellRequest);
         return spell;
     }
-    private async Task<Spell> SetDescriptorForSpell(Spell spell, SpellRequest spellRequest)
+    private async Task<Spell> setDescriptorForSpell(Spell spell, SpellRequest spellRequest)
     {
         if (spellRequest.Descriptors is not null)
         {
             foreach (var descriptorName in spellRequest.Descriptors)
             {
-                var descriptorEntity = await _context.Descriptor.FirstOrDefaultAsync(d => d.Name.ToLower() == descriptorName.ToLower());
+                var descriptorEntity = await _context.Descriptor.FirstOrDefaultAsync(d => string.Equals(d.Name, descriptorName, StringComparison.CurrentCultureIgnoreCase));
                 if (descriptorEntity is null)
                 {
                     _logger.LogError("Couldn't find a descriptor matching {Name}", descriptorName);
@@ -233,29 +206,5 @@ public class SpellController : ControllerBase
             }
         }
         return spell;
-    }
-
-    /// <summary>
-    ///     Remove a spell
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    // [HttpDelete("{id}")]
-    // public async Task<IActionResult> DeleteSpell(int id)
-    // {
-    //     var spell = await _context.Spell.FindAsync(id);
-    //     if (spell == null)
-    //     {
-    //         return NotFound();
-    //     }
-    //
-    //     _context.Spell.Remove(spell);
-    //     await _context.SaveChangesAsync();
-    //
-    //     return NoContent();
-    // }
-    private bool SpellExists(int id)
-    {
-        return _context.Spell.Any(e => e.Id == id);
     }
 }

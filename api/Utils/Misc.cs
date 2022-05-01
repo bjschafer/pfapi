@@ -38,4 +38,18 @@ internal static class Misc
         var finalResult = condition.Compile()();
         return source.WhereIf(finalResult, predicate);
     }
+
+    internal static string? ValidatePagination(int page, int limit)
+    {
+        if (page < 1)
+        {
+            return $"Invalid page {page}: must be greater than zero.";
+        }
+        if (limit > 100)
+        {
+            return $"Limit {limit} too high; keep it below 100";
+        }
+
+        return null;
+    }
 }
