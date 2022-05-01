@@ -8,7 +8,7 @@ public class Class : ISeedable
     public int    Id   { get; set; }
     public string Name { get; set; }
 
-    public IDictionary<int, Dictionary<int, int>>? SpellsPerDay { get; set; }
+    public IDictionary<int, IDictionary<int, int>>? SpellsPerDay { get; set; }
 
     public int? MaxSpellLevel(int? characterLevel)
     {

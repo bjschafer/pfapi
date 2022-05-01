@@ -99,7 +99,7 @@ public class SpellController : ControllerBase
                                   .Include(s => s.Source)
                                   .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
 
-        if (spell == null)
+        if (spell is null)
         {
             return NotFound();
         }
