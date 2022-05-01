@@ -45,7 +45,7 @@ public class ClassController : ControllerBase
         return @class;
     }
 
-    [HttpGet("SpellsPerDay")]
+    [HttpGet("{name}/SpellsPerDay")]
     public async Task<ActionResult<int>> GetSpellsPerDay(string name, int classLevel, int spellLevel, int abilityScore)
     {
         var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name.ToLower() == name);
