@@ -77,8 +77,6 @@ public class SpellController : ControllerBase
     /// <response code="200">Returns the spell</response>
     /// <response code="404">Spell with given ID not found</response>
     [HttpGet("{name}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<SpellResponse>> GetSpell(string name)
     {
         var spell = await _context.Spell
