@@ -10,17 +10,14 @@ public class Mapper : Profile
 {
     public Mapper()
     {
+
+#region Spell
+
         CreateMap<Spell, SpellResponse>();
         CreateMap<ClassLevel, KeyValuePair<string, int>>()
            .ConstructUsing(cl => new KeyValuePair<string, int>(cl.ClassName, cl.Level));
         CreateMap<Descriptor, string>()
            .ConstructUsing(d => d.Name);
-        CreateMap<SourceMaterial, SourceMaterialResponse>();
-        CreateMap<string, SourceMaterial>()
-           .ConstructUsing(s => new SourceMaterial
-            {
-                Name = s,
-            });
 
         CreateMap<SpellRequest, Spell>();
         CreateMap<KeyValuePair<string, int>, ClassLevel>()
@@ -35,5 +32,25 @@ public class Mapper : Profile
             {
                 Name = s,
             });
+
+#endregion
+
+#region SourceMaterial
+
+        CreateMap<SourceMaterial, SourceMaterialResponse>();
+        CreateMap<string, SourceMaterial>()
+           .ConstructUsing(s => new SourceMaterial
+            {
+                Name = s,
+            });
+
+#endregion
+
+#region Class
+
+        CreateMap<Class, ClassResponse>();
+
+#endregion
+
     }
 }

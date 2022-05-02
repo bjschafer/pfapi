@@ -6,6 +6,7 @@ using api.Utils;
 
 using AutoMapper;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -53,10 +54,10 @@ public class SpellController : ControllerBase
             return NotFound($"Class {className} not found");
         }
         var spells = await _context.Spell
-                                   .WhereIf(desiredClass is not null && level.HasValue, s => s.ClassLevels.Any(cl => string.Equals(cl.ClassName, className!, StringComparison.CurrentCultureIgnoreCase) && cl.Level == level))
-                                   .WhereIf(desiredClass is not null, s => s.ClassLevels.Any(cl => string.Equals(cl.ClassName, className!, StringComparison.CurrentCultureIgnoreCase)))
+                                   .WhereIf(desiredClass is not null && level.HasValue, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase() && cl.Level == level))
+                                   .WhereIf(desiredClass is not null, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase()))
                                    .WhereIf(level.HasValue, s => s.ClassLevels.Any(cl => cl.Level == level))
-                                   .WhereIf(school is not null, s => string.Equals(s.School, school, StringComparison.CurrentCultureIgnoreCase))
+                                   .WhereIf(school is not null, s => s.School == school!.ToTitleCase())
                                    .WhereIf(spellName is not null, s => s.Name.Contains(spellName!, StringComparison.CurrentCultureIgnoreCase))
                                    .Include(s => s.Descriptors)
                                    .Include(s => s.Source)
@@ -83,7 +84,7 @@ public class SpellController : ControllerBase
         var spell = await _context.Spell
                                   .Include(s => s.Descriptors)
                                   .Include(s => s.Source)
-                                  .FirstOrDefaultAsync(s => string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
+                                  .FirstOrDefaultAsync(s => s.Name == name.ToTitleCase());
 
         if (spell is null)
         {
@@ -98,7 +99,7 @@ public class SpellController : ControllerBase
         if (className is not null)
         {
             return await _context.Class
-                                 .FirstOrDefaultAsync(c => string.Equals(c.Name, className, StringComparison.CurrentCultureIgnoreCase));
+                                 .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
         }
         return null!;
     }
@@ -123,7 +124,7 @@ public class SpellController : ControllerBase
             return BadRequest(validPagination);
         }
         var desiredClass = await _context.Class
-                                         .FirstOrDefaultAsync(c => string.Equals(c.Name, className, StringComparison.CurrentCultureIgnoreCase));
+                                         .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
         if (desiredClass is null)
         {
             return NotFound($"Class {className} not found");
@@ -139,72 +140,5 @@ public class SpellController : ControllerBase
                                    .ToListAsync();
         var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
-    }
-
-    /// <summary>
-    ///     Update a spell
-    /// </summary>
-    /// <param name="id"></param>
-    /// <param name="spellRequest"></param>
-    /// <returns></returns>
-    [HttpPut("{id:int}")]
-    public async Task<IActionResult> PutSpell(int id, SpellRequest spellRequest)
-    {
-        var existingSpell = await _context.Spell.FindAsync(id);
-        if (existingSpell is null)
-        {
-            return NotFound();
-        }
-        var spell = _mapper.Map(spellRequest, existingSpell);
-
-        _context.Entry(spell!).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-        return NoContent();
-    }
-
-    /// <summary>
-    ///     Create a new spell
-    /// </summary>
-    /// <param name="spellRequest"></param>
-    /// <returns></returns>
-    [HttpPost]
-    public async Task<ActionResult<Spell>> PostSpell([FromBody] SpellRequest spellRequest)
-    {
-        var spell = await mapSpellRequestToSpell(spellRequest);
-        // TODO validate classes contained are valid
-
-        _context.Spell.Add(spell);
-
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetSpell), new
-        {
-            id = spell.Id,
-        }, spellRequest);
-    }
-    private async Task<Spell> mapSpellRequestToSpell(SpellRequest spellRequest)
-    {
-        var spell = _mapper.Map<Spell>(spellRequest);
-        spell.Descriptors?.Clear();
-
-        spell = await setDescriptorForSpell(spell, spellRequest);
-        return spell;
-    }
-    private async Task<Spell> setDescriptorForSpell(Spell spell, SpellRequest spellRequest)
-    {
-        if (spellRequest.Descriptors is not null)
-        {
-            foreach (var descriptorName in spellRequest.Descriptors)
-            {
-                var descriptorEntity = await _context.Descriptor.FirstOrDefaultAsync(d => string.Equals(d.Name, descriptorName, StringComparison.CurrentCultureIgnoreCase));
-                if (descriptorEntity is null)
-                {
-                    _logger.LogError("Couldn't find a descriptor matching {Name}", descriptorName);
-                    continue;
-                }
-                spell.Descriptors?.Add(descriptorEntity);
-            }
-        }
-        return spell;
     }
 }

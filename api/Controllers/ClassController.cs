@@ -1,6 +1,7 @@
 #nullable disable
 using api.Data;
 using api.Models.Database;
+using api.Models.Response;
 using api.Utils;
 
 using AutoMapper;
@@ -27,28 +28,28 @@ public class ClassController : ControllerBase
 
     // GET: api/Class
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Class>>> GetClass()
+    public async Task<ActionResult<IEnumerable<ClassResponse>>> GetClass()
     {
-        return await _context.Class.ToListAsync();
+        return Ok(_mapper.Map<IEnumerable<ClassResponse>>(await _context.Class.ToListAsync()));
     }
 
     [HttpGet("{name}")]
-    public async Task<ActionResult<Class>> GetClass(string name)
+    public async Task<ActionResult<ClassResponse>> GetClass(string name)
     {
-        var @class = await _context.Class.FirstOrDefaultAsync(c => string.Equals(c.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
 
         if (@class is null)
         {
             return NotFound();
         }
 
-        return @class;
+        return Ok(_mapper.Map<ClassResponse>(@class));
     }
 
     [HttpGet("{name}/SpellsPerDay")]
     public async Task<ActionResult<int>> GetSpellsPerDay(string name, int classLevel, int spellLevel, int abilityScore)
     {
-        var @class = await _context.Class.FirstOrDefaultAsync(c => string.Equals(c.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
 
         if (@class is null)
         {
