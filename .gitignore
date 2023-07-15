@@ -10,3 +10,4 @@ riderModule.iml
 *.db-wal
 
 .idea/
+.vscode/
