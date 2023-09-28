@@ -1,6 +1,5 @@
 #nullable disable
 using api.Data;
-using api.Models.Database;
 using api.Models.Response;
 using api.Utils;
 
@@ -13,19 +12,8 @@ namespace api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ClassController : ControllerBase
+public class ClassController(ApiContext context, IMapperBase mapper, ILogger<ClassController> logger) : ControllerBase
 {
-    private readonly ApiContext               _context;
-    private readonly ILogger<ClassController> _logger;
-    private readonly IMapper                  _mapper;
-
-    public ClassController(ApiContext context, IMapper mapper, ILogger<ClassController> logger)
-    {
-        _context = context;
-        _mapper  = mapper;
-        _logger  = logger;
-    }
-
     /// <summary>
     /// List all classes in the database
     /// </summary>
@@ -33,7 +21,7 @@ public class ClassController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClassResponse>>> GetClass()
     {
-        return Ok(_mapper.Map<IEnumerable<ClassResponse>>(await _context.Class.ToListAsync()));
+        return Ok(mapper.Map<IEnumerable<ClassResponse>>(await context.Class.ToListAsync()));
     }
 
     /// <summary>
@@ -46,14 +34,14 @@ public class ClassController : ControllerBase
     [HttpGet("{name}")]
     public async Task<ActionResult<ClassResponse>> GetClass(string name)
     {
-        var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
+        var @class = await context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
 
         if (@class is null)
         {
             return NotFound();
         }
 
-        return Ok(_mapper.Map<ClassResponse>(@class));
+        return Ok(mapper.Map<ClassResponse>(@class));
     }
 
     /// <summary>
@@ -71,7 +59,7 @@ public class ClassController : ControllerBase
     [HttpGet("{name}/SpellsPerDay")]
     public async Task<ActionResult<int>> GetSpellsPerDay(string name, int classLevel, int spellLevel, int abilityScore)
     {
-        var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
+        var @class = await context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
 
         if (@class is null)
         {
@@ -92,7 +80,7 @@ public class ClassController : ControllerBase
     [HttpGet("{name}/HighestSpellLevel")]
     public async Task<ActionResult<int>> GetHighestSpellLevel(string name, int classLevel)
     {
-        var @class = await _context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
+        var @class = await context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
         if (@class is null)
         {
             return NotFound();

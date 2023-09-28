@@ -1,12 +1,10 @@
 using api.Data;
 using api.Models.Database;
-using api.Models.Request;
 using api.Models.Response;
 using api.Utils;
 
 using AutoMapper;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,19 +12,8 @@ namespace api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SpellController : ControllerBase
+public class SpellController(ApiContext context, IMapperBase mapper, ILogger<SpellController> logger) : ControllerBase
 {
-    private readonly ApiContext               _context;
-    private readonly ILogger<SpellController> _logger;
-    private readonly IMapper                  _mapper;
-
-    public SpellController(ApiContext context, IMapper mapper, ILogger<SpellController> logger)
-    {
-        _context = context;
-        _mapper  = mapper;
-        _logger  = logger;
-    }
-
     /// <summary>
     ///     Find spells
     /// </summary>
@@ -53,19 +40,19 @@ public class SpellController : ControllerBase
         {
             return NotFound($"Class {className} not found");
         }
-        var spells = await _context.Spell
-                                   .WhereIf(desiredClass is not null && level.HasValue, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase() && cl.Level == level))
-                                   .WhereIf(desiredClass is not null, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase()))
-                                   .WhereIf(level.HasValue, s => s.ClassLevels.Any(cl => cl.Level == level))
-                                   .WhereIf(school is not null, s => s.School == school!.ToTitleCase())
-                                   .WhereIf(spellName is not null, s => s.Name.Contains(spellName!, StringComparison.CurrentCultureIgnoreCase))
-                                   .Include(s => s.Descriptors)
-                                   .Include(s => s.Source)
-                                   .Skip((page - 1) * limit)
-                                   .Take(limit)
-                                   .ToListAsync();
+        var spells = await context.Spell
+                                  .WhereIf(desiredClass is not null && level.HasValue, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase() && cl.Level == level))
+                                  .WhereIf(desiredClass is not null, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase()))
+                                  .WhereIf(level.HasValue, s => s.ClassLevels.Any(cl => cl.Level == level))
+                                  .WhereIf(school is not null, s => s.School == school!.ToTitleCase())
+                                  .WhereIf(spellName is not null, s => s.Name.Contains(spellName!, StringComparison.CurrentCultureIgnoreCase))
+                                  .Include(s => s.Descriptors)
+                                  .Include(s => s.Source)
+                                  .Skip((page - 1) * limit)
+                                  .Take(limit)
+                                  .ToListAsync();
 
-        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
+        var mappedSpells = mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
     }
 
@@ -79,25 +66,25 @@ public class SpellController : ControllerBase
     [HttpGet("{name}")]
     public async Task<ActionResult<SpellResponse>> GetSpell(string name)
     {
-        var spell = await _context.Spell
-                                  .Include(s => s.Descriptors)
-                                  .Include(s => s.Source)
-                                  .FirstOrDefaultAsync(s => s.Name == name.ToTitleCase());
+        var spell = await context.Spell
+                                 .Include(s => s.Descriptors)
+                                 .Include(s => s.Source)
+                                 .FirstOrDefaultAsync(s => s.Name == name.ToTitleCase());
 
         if (spell is null)
         {
             return NotFound();
         }
 
-        return Ok(_mapper.Map<SpellResponse>(spell));
+        return Ok(mapper.Map<SpellResponse>(spell));
     }
 
     private async Task<Class?> validateClass(string? className)
     {
         if (className is not null)
         {
-            return await _context.Class
-                                 .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
+            return await context.Class
+                                .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
         }
         return null!;
     }
@@ -121,22 +108,22 @@ public class SpellController : ControllerBase
         {
             return BadRequest(validPagination);
         }
-        var desiredClass = await _context.Class
-                                         .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
+        var desiredClass = await context.Class
+                                        .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
         if (desiredClass is null)
         {
             return NotFound($"Class {className} not found");
         }
 
-        var spells = await _context.Spell
-                                   .Include(s => s.Descriptors)
-                                   .Include(s => s.Source)
-                                   .WhereIf(level is not null, s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name && cl.Level == level))
-                                   .Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name))
-                                   .Skip((page - 1) * limit)
-                                   .Take(limit)
-                                   .ToListAsync();
-        var mappedSpells = _mapper.Map<List<SpellResponse>>(spells);
+        var spells = await context.Spell
+                                  .Include(s => s.Descriptors)
+                                  .Include(s => s.Source)
+                                  .WhereIf(level is not null, s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name && cl.Level == level))
+                                  .Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name))
+                                  .Skip((page - 1) * limit)
+                                  .Take(limit)
+                                  .ToListAsync();
+        var mappedSpells = mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
     }
 }

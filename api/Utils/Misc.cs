@@ -1,7 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Linq.Expressions;
-
 namespace api.Utils;
 
 internal static class Misc
@@ -11,6 +7,7 @@ internal static class Misc
     /// </summary>
     /// <param name="configuration"></param>
     /// <param name="settingName">If name contains ":", it's replaced with _</param>
+    /// <param name="defaultValue">An optional default value to return if neither is set</param>
     /// <returns></returns>
     internal static string AppSettingOrEnv(ConfigurationManager configuration, string settingName, string? defaultValue = null)
     {

@@ -1,7 +1,6 @@
 using api.Data;
 using api.Models.Database;
 using api.Models.Request;
-using api.Models.Response;
 using api.Utils;
 
 using AutoMapper;
@@ -15,19 +14,8 @@ namespace api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
-public class AdminController : ControllerBase
+public class AdminController(ApiContext context, IMapperBase mapper, ILogger<AdminController> logger) : ControllerBase
 {
-    private readonly ApiContext               _context;
-    private readonly ILogger<AdminController> _logger;
-    private readonly IMapper                  _mapper;
-
-    public AdminController(ApiContext context, IMapper mapper, ILogger<AdminController> logger)
-    {
-        _context = context;
-        _mapper  = mapper;
-        _logger  = logger;
-    }
-
     /// <summary>
     ///     Update a spell
     /// </summary>
@@ -38,15 +26,15 @@ public class AdminController : ControllerBase
     [Authorize]
     public async Task<IActionResult> PutSpell(int id, SpellRequest spellRequest)
     {
-        var existingSpell = await _context.Spell.FindAsync(id);
+        var existingSpell = await context.Spell.FindAsync(id);
         if (existingSpell is null)
         {
             return NotFound();
         }
-        var spell = _mapper.Map(spellRequest, existingSpell);
+        var spell = mapper.Map(spellRequest, existingSpell);
 
-        _context.Entry(spell!).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
+        context.Entry(spell!).State = EntityState.Modified;
+        await context.SaveChangesAsync();
         return NoContent();
     }
 
@@ -61,9 +49,9 @@ public class AdminController : ControllerBase
         var spell = await mapSpellRequestToSpell(spellRequest);
         // TODO validate classes contained are valid
 
-        _context.Spell.Add(spell);
+        context.Spell.Add(spell);
 
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
 
         return CreatedAtRoute(new
         {
@@ -72,7 +60,7 @@ public class AdminController : ControllerBase
     }
     private async Task<Spell> mapSpellRequestToSpell(SpellRequest spellRequest)
     {
-        var spell = _mapper.Map<Spell>(spellRequest);
+        var spell = mapper.Map<Spell>(spellRequest);
         spell.Descriptors?.Clear();
 
         spell = await setDescriptorForSpell(spell, spellRequest);
@@ -84,10 +72,10 @@ public class AdminController : ControllerBase
         {
             foreach (var descriptorName in spellRequest.Descriptors)
             {
-                var descriptorEntity = await _context.Descriptor.FirstOrDefaultAsync(d => d.Name == descriptorName.ToTitleCase());
+                var descriptorEntity = await context.Descriptor.FirstOrDefaultAsync(d => d.Name == descriptorName.ToTitleCase());
                 if (descriptorEntity is null)
                 {
-                    _logger.LogError("Couldn't find a descriptor matching {Name}", descriptorName);
+                    logger.LogError("Couldn't find a descriptor matching {Name}", descriptorName);
                     continue;
                 }
                 spell.Descriptors?.Add(descriptorEntity);
