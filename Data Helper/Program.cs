@@ -1,12 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using RestSharp;
-using RestSharp.Serializers;
 
 namespace Data_Helper;
 
 internal class Program
 {
-    private static readonly string _api_base = "http://localhost:5252/api";
+    private static readonly string apiBase = "http://localhost:5252/api";
     // private static readonly string _api_base = "https://pfapi.cmdcentral.xyz/api";
     private static async Task Main(string[] args)
     {
@@ -31,7 +30,7 @@ internal class Program
 
     private static async Task PostToApi(IEnumerable<string> spellsAsJson)
     {
-        var client = new RestClient(_api_base);
+        var client = new RestClient(apiBase);
 
         foreach (var spell in spellsAsJson)
         {

@@ -10,7 +10,7 @@ namespace Data_Helper;
 
 public static class SpellImporter
 {
-    private static readonly Dictionary<string, string> ShortLongClassNames = new()
+    private static readonly Dictionary<string, string> shortLongClassNames = new()
     {
         {
             "Wiz", "Wizard"
@@ -113,9 +113,9 @@ public static class SpellImporter
         foreach (var classProperty in classProperties)
         {
             var className = classProperty.Name;
-            if (ShortLongClassNames.ContainsKey(className))
+            if (shortLongClassNames.ContainsKey(className))
             {
-                className = ShortLongClassNames[className];
+                className = shortLongClassNames[className];
             }
             var level = classProperty.GetValue(raw);
             if (level is not null)
@@ -162,6 +162,6 @@ public static class SpellImporter
     {
         // first we need to transform from CamelCase to snake_case
         // and then tolower
-        return string.Concat((input ?? string.Empty).Select((x, i) => i > 0 && char.IsUpper(x) && !char.IsUpper(input[i - 1]) ? $"_{x}" : x.ToString())).ToLower();
+        return string.Concat(input.Select((x, i) => i > 0 && char.IsUpper(x) && !char.IsUpper(input[i - 1]) ? $"_{x}" : x.ToString())).ToLower();
     }
 }
