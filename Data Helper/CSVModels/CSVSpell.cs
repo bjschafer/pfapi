@@ -1,6 +1,6 @@
 using CsvHelper.Configuration.Attributes;
 
-namespace Data_Helper;
+namespace Data_Helper.CSVModels;
 
 public class CsvSpell
 {
