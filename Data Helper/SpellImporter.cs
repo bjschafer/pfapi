@@ -6,6 +6,8 @@ using api.Models.Request;
 using CsvHelper;
 using CsvHelper.Configuration;
 
+using Data_Helper.CSVModels;
+
 namespace Data_Helper;
 
 public static class SpellImporter

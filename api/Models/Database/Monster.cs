@@ -1,26 +1,35 @@
 using System.ComponentModel.DataAnnotations;
 
+using Microsoft.EntityFrameworkCore;
+
+// ReSharper disable InconsistentNaming
+
 namespace api.Models.Database;
 
+[Index(nameof(Name), IsUnique = true)]
 public class Monster
 {
     public int    Id   { get; set; }
     public string Name { get; set; }
 
     [Range(0.125, 99)]
-    public decimal CR                           { get; set; }
-    public int            XP                    { get; set; }
-    public string?        Race                  { get; set; }
-    public Class?         Class                 { get; set; }
-    public SourceMaterial Source                { get; set; }
-    public string?        Alignment             { get; set; }
-    public string?        CreatureSize          { get; set; }
-    public string?        CreatureType          { get; set; }
-    public string?        Subtype               { get; set; }
-    public string?        Init                  { get; set; }
-    public string?        Senses                { get; set; }
-    public string?        Aura                  { get; set; }
-    public string?        AC                    { get; set; }
+    public decimal CR { get;                  set; }
+    public int            XP           { get; set; }
+    public string?        Race         { get; set; }
+    public Class?         Class        { get; set; }
+    public SourceMaterial Source       { get; set; }
+    public string?        Alignment    { get; set; }
+    public string?        CreatureSize { get; set; }
+    public string?        CreatureType { get; set; }
+    public string?        Subtype      { get; set; }
+    public string?        Init         { get; set; }
+    public string?        Senses       { get; set; }
+    public string?        Aura         { get; set; }
+
+    public int AC           { get; set; }
+    public int TouchAC      { get; set; }
+    public int FlatFootedAC { get; set; }
+
     public string?        ACMods                { get; set; }
     public int            HP                    { get; set; }
     public string?        HD                    { get; set; }
@@ -100,6 +109,6 @@ public class Monster
     public string?        LinkText              { get; set; }
     public bool           UniqueMonster         { get; set; }
     public int            MR                    { get; set; }
-    public bool           Mythic                { get; set; }
+    public bool           IsMythic                { get; set; }
     public bool           MT                    { get; set; }
 }

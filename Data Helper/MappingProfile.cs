@@ -2,6 +2,8 @@ using api.Models.Database;
 
 using AutoMapper;
 
+using Data_Helper.CSVModels;
+
 namespace Data_Helper;
 
 public class MappingProfile : Profile
