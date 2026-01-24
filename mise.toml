@@ -1,0 +1,43 @@
+[tools]
+dotnet = '9'
+
+[env]
+PROJECT = "./api/api.csproj"
+# Use 'container' on macOS, 'docker' elsewhere. Override with CONTAINER_CMD env var.
+CONTAINER_CMD = "{% if env.CONTAINER_CMD %}{{ env.CONTAINER_CMD }}{% elif os() == 'macos' %}container{% else %}docker{% endif %}"
+
+[tasks.build]
+description = "Build the project"
+run = "dotnet build --project $PROJECT"
+
+[tasks.run]
+description = "Run the development server"
+run = "dotnet run --project $PROJECT"
+
+[tasks.clean]
+description = "Clean build objects"
+run = """
+rm -rf ./api/bin/* ./api/obj/*
+rm -rf './Data Helper/bin/'* './Data Helper/obj/'*
+"""
+
+[tasks.docker-build]
+description = "Build and tag the container image"
+run = "$CONTAINER_CMD build -f api/Dockerfile api -t pfapi:latest"
+
+[tasks.docker-run]
+description = "Build, tag, and run the container image binding to :8080"
+depends = ["docker-build"]
+run = "$CONTAINER_CMD run -it --rm -d -p 8080:80 pfapi:latest"
+
+[tasks.migratedb]
+description = "Add and run migrations (usage: mise run migratedb <name>)"
+run = """
+#!/usr/bin/env bash
+if [ -z "$1" ]; then
+  echo "Usage: mise run migratedb <migration_name>"
+  exit 1
+fi
+dotnet ef migrations add "$1" --project $PROJECT
+dotnet ef database update --project $PROJECT
+"""
