@@ -14,7 +14,7 @@ namespace api.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [ApiExplorerSettings(IgnoreApi = true)]
-public class AdminController(ApiContext context, IMapperBase mapper, ILogger<AdminController> logger) : ControllerBase
+public class AdminController(ApiContext context, IMapper mapper, ILogger<AdminController> logger) : ControllerBase
 {
     /// <summary>
     ///     Update a spell

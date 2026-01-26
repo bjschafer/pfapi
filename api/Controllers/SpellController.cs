@@ -12,7 +12,7 @@ namespace api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SpellController(ApiContext context, IMapperBase mapper, ILogger<SpellController> logger) : ControllerBase
+public class SpellController(ApiContext context, IMapper mapper, ILogger<SpellController> logger) : ControllerBase
 {
     /// <summary>
     ///     Find spells

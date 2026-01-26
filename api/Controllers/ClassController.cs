@@ -12,7 +12,7 @@ namespace api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ClassController(ApiContext context, IMapperBase mapper, ILogger<ClassController> logger) : ControllerBase
+public class ClassController(ApiContext context, IMapper mapper, ILogger<ClassController> logger) : ControllerBase
 {
     /// <summary>
     /// List all classes in the database
