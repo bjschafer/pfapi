@@ -41,3 +41,12 @@ fi
 dotnet ef migrations add "$1" --project $PROJECT
 dotnet ef database update --project $PROJECT
 """
+
+[tasks."tools:install"]
+description = "Installs or restores local dotnet tools"
+run = "dotnet tool restore"
+
+[tasks.upgrade-deps]
+description = "Update dotnet dependencies"
+depends = ['tools:install']
+run = "dotnet outdated --upgrade"
