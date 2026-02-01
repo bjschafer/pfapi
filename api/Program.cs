@@ -11,7 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 switch (Misc.AppSettingOrEnv(builder.Configuration, "Database:Type", "postgres"))
 {
-
+    case "inmemory":
+        builder.Services.AddDbContext<ApiContext>(options =>
+                                                      options.UseInMemoryDatabase("TestDb")
+        );
+        break;
     case "sqlite":
         builder.Services.AddDbContext<ApiContext>(options =>
                                                       options.UseSqlite(builder.Configuration.GetConnectionString("apiContext"))
