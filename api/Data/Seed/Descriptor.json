@@ -1,118 +1,31 @@
 [
-  {
-    "Id": 29,
-    "Name": "Acid"
-  },
-  {
-    "Id": 30,
-    "Name": "Air"
-  },
-  {
-    "Id": 31,
-    "Name": "Chaotic"
-  },
-  {
-    "Id": 32,
-    "Name": "Cold"
-  },
-  {
-    "Id": 33,
-    "Name": "Curse"
-  },
-  {
-    "Id": 34,
-    "Name": "Darkness"
-  },
-  {
-    "Id": 35,
-    "Name": "Death"
-  },
-  {
-    "Id": 36,
-    "Name": "Disease"
-  },
-  {
-    "Id": 37,
-    "Name": "Draconic"
-  },
-  {
-    "Id": 38,
-    "Name": "Earth"
-  },
-  {
-    "Id": 39,
-    "Name": "Electricity"
-  },
-  {
-    "Id": 40,
-    "Name": "Emotion"
-  },
-  {
-    "Id": 41,
-    "Name": "Evil"
-  },
-  {
-    "Id": 42,
-    "Name": "Fear"
-  },
-  {
-    "Id": 57,
-    "Name": "Figment"
-  },
-  {
-    "Id": 43,
-    "Name": "Fire"
-  },
-  {
-    "Id": 44,
-    "Name": "Force"
-  },
-  {
-    "Id": 45,
-    "Name": "Good"
-  },
-  {
-    "Id": 46,
-    "Name": "Language-Dependent"
-  },
-  {
-    "Id": 47,
-    "Name": "Lawful"
-  },
-  {
-    "Id": 48,
-    "Name": "Light"
-  },
-  {
-    "Id": 49,
-    "Name": "Meditative"
-  },
-  {
-    "Id": 50,
-    "Name": "Mind-Affecting"
-  },
-  {
-    "Id": 51,
-    "Name": "Pain"
-  },
-  {
-    "Id": 52,
-    "Name": "Poison"
-  },
-  {
-    "Id": 53,
-    "Name": "Ruse"
-  },
-  {
-    "Id": 54,
-    "Name": "Shadow"
-  },
-  {
-    "Id": 55,
-    "Name": "Sonic"
-  },
-  {
-    "Id": 56,
-    "Name": "Water"
-  }
+  { "Name": "Acid" },
+  { "Name": "Air" },
+  { "Name": "Chaotic" },
+  { "Name": "Cold" },
+  { "Name": "Curse" },
+  { "Name": "Darkness" },
+  { "Name": "Death" },
+  { "Name": "Disease" },
+  { "Name": "Draconic" },
+  { "Name": "Earth" },
+  { "Name": "Electricity" },
+  { "Name": "Emotion" },
+  { "Name": "Evil" },
+  { "Name": "Fear" },
+  { "Name": "Figment" },
+  { "Name": "Fire" },
+  { "Name": "Force" },
+  { "Name": "Good" },
+  { "Name": "Language-Dependent" },
+  { "Name": "Lawful" },
+  { "Name": "Light" },
+  { "Name": "Meditative" },
+  { "Name": "Mind-Affecting" },
+  { "Name": "Pain" },
+  { "Name": "Poison" },
+  { "Name": "Ruse" },
+  { "Name": "Shadow" },
+  { "Name": "Sonic" },
+  { "Name": "Water" }
 ]
