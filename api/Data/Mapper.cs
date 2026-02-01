@@ -1,6 +1,7 @@
 using api.Models.Database;
 using api.Models.Request;
 using api.Models.Response;
+using api.Utils;
 
 using AutoMapper;
 
@@ -23,14 +24,14 @@ public class Mapper : Profile
         CreateMap<KeyValuePair<string, int>, ClassLevel>()
            .ConstructUsing(kvp => new ClassLevel
                 {
-                    ClassName = kvp.Key,
+                    ClassName = kvp.Key.ToTitleCase(),
                     Level     = kvp.Value,
                 }
             );
         CreateMap<string, Descriptor>()
            .ConstructUsing(s => new Descriptor
             {
-                Name = s,
+                Name = s.ToTitleCase(),
             });
 
 #endregion

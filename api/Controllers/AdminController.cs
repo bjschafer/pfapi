@@ -44,10 +44,25 @@ public class AdminController(ApiContext context, IMapper mapper, ILogger<AdminCo
     /// <param name="spellRequest"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<Spell>> PostSpell([FromBody] SpellRequest spellRequest)
     {
+        // Validate that all class names in ClassLevels exist
+        var validClassNames = await context.Class
+                                           .AsNoTracking()
+                                           .Select(c => c.Name)
+                                           .ToListAsync();
+
+        var invalidClasses = spellRequest.ClassLevels.Keys
+                                         .Where(name => !validClassNames.Contains(name.ToTitleCase()))
+                                         .ToList();
+
+        if (invalidClasses.Count > 0)
+        {
+            return BadRequest($"Invalid class names: {string.Join(", ", invalidClasses)}");
+        }
+
         var spell = await mapSpellRequestToSpell(spellRequest);
-        // TODO validate classes contained are valid
 
         context.Spell.Add(spell);
 
