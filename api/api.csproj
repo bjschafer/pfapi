@@ -17,7 +17,7 @@
         <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="10.0.0" />
         <PackageReference Include="EntityFramework" Version="6.5.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.2" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0">
             <PrivateAssets>all</PrivateAssets>
