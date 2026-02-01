@@ -10,7 +10,7 @@ CONTAINER_CMD = "{% if env.CONTAINER_CMD %}{{ env.CONTAINER_CMD }}{% elif os() =
 description = "Build the project"
 run = "dotnet build $PROJECT"
 
-[tasks.run]
+[tasks.serve]
 description = "Run the development server"
 run = "dotnet run --project $PROJECT"
 
