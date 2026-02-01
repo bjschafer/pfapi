@@ -12,7 +12,7 @@ namespace api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class SpellController(ApiContext context, IMapper mapper, ILogger<SpellController> logger) : ControllerBase
+public class SpellController(ApiContext context, IMapper mapper) : ControllerBase
 {
     /// <summary>
     ///     Find spells
@@ -40,10 +40,22 @@ public class SpellController(ApiContext context, IMapper mapper, ILogger<SpellCo
         {
             return NotFound($"Class {className} not found");
         }
-        var spells = await context.Spell
-                                  .WhereIf(desiredClass is not null && level.HasValue, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase() && cl.Level == level))
-                                  .WhereIf(desiredClass is not null, s => s.ClassLevels.Any(cl => cl.ClassName == className!.ToTitleCase()))
-                                  .WhereIf(level.HasValue, s => s.ClassLevels.Any(cl => cl.Level == level))
+
+        var query = context.Spell.AsNoTracking();
+
+        // Apply class/level filter - only one condition needed
+        if (desiredClass is not null)
+        {
+            query = level.HasValue
+                ? query.Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name && cl.Level == level))
+                : query.Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name));
+        }
+        else if (level.HasValue)
+        {
+            query = query.Where(s => s.ClassLevels.Any(cl => cl.Level == level));
+        }
+
+        var spells = await query
                                   .WhereIf(school is not null, s => s.School == school!.ToTitleCase())
                                   .WhereIf(spellName is not null, s => s.Name.Contains(spellName!, StringComparison.CurrentCultureIgnoreCase))
                                   .Include(s => s.Descriptors)
@@ -67,6 +79,7 @@ public class SpellController(ApiContext context, IMapper mapper, ILogger<SpellCo
     public async Task<ActionResult<SpellResponse>> GetSpell(string name)
     {
         var spell = await context.Spell
+                                 .AsNoTracking()
                                  .Include(s => s.Descriptors)
                                  .Include(s => s.Source)
                                  .FirstOrDefaultAsync(s => s.Name == name.ToTitleCase());
@@ -81,12 +94,14 @@ public class SpellController(ApiContext context, IMapper mapper, ILogger<SpellCo
 
     private async Task<Class?> validateClass(string? className)
     {
-        if (className is not null)
+        if (className is null)
         {
-            return await context.Class
-                                .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
+            return null;
         }
-        return null!;
+
+        return await context.Class
+                            .AsNoTracking()
+                            .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
     }
 
     /// <summary>
@@ -109,20 +124,27 @@ public class SpellController(ApiContext context, IMapper mapper, ILogger<SpellCo
             return BadRequest(validPagination);
         }
         var desiredClass = await context.Class
+                                        .AsNoTracking()
                                         .FirstOrDefaultAsync(c => c.Name == className.ToTitleCase());
         if (desiredClass is null)
         {
             return NotFound($"Class {className} not found");
         }
 
-        var spells = await context.Spell
-                                  .Include(s => s.Descriptors)
-                                  .Include(s => s.Source)
-                                  .WhereIf(level is not null, s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name && cl.Level == level))
-                                  .Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name))
-                                  .Skip((page - 1) * limit)
-                                  .Take(limit)
-                                  .ToListAsync();
+        IQueryable<Spell> query = context.Spell
+                                         .AsNoTracking()
+                                         .Include(s => s.Descriptors)
+                                         .Include(s => s.Source);
+
+        // Apply class filter (with optional level)
+        query = level is not null
+            ? query.Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name && cl.Level == level))
+            : query.Where(s => s.ClassLevels.Any(cl => cl.ClassName == desiredClass.Name));
+
+        var spells = await query
+                           .Skip((page - 1) * limit)
+                           .Take(limit)
+                           .ToListAsync();
         var mappedSpells = mapper.Map<List<SpellResponse>>(spells);
         return Ok(mappedSpells);
     }

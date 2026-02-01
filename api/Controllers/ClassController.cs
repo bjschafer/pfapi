@@ -1,4 +1,3 @@
-#nullable disable
 using api.Data;
 using api.Models.Response;
 using api.Utils;
@@ -12,7 +11,7 @@ namespace api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ClassController(ApiContext context, IMapper mapper, ILogger<ClassController> logger) : ControllerBase
+public class ClassController(ApiContext context, IMapper mapper) : ControllerBase
 {
     /// <summary>
     /// List all classes in the database
@@ -21,7 +20,8 @@ public class ClassController(ApiContext context, IMapper mapper, ILogger<ClassCo
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClassResponse>>> GetClass()
     {
-        return Ok(mapper.Map<IEnumerable<ClassResponse>>(await context.Class.ToListAsync()));
+        var classes = await context.Class.AsNoTracking().ToListAsync();
+        return Ok(mapper.Map<IEnumerable<ClassResponse>>(classes));
     }
 
     /// <summary>
@@ -34,7 +34,9 @@ public class ClassController(ApiContext context, IMapper mapper, ILogger<ClassCo
     [HttpGet("{name}")]
     public async Task<ActionResult<ClassResponse>> GetClass(string name)
     {
-        var @class = await context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
+        var @class = await context.Class
+                                   .AsNoTracking()
+                                   .FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
 
         if (@class is null)
         {
@@ -59,14 +61,22 @@ public class ClassController(ApiContext context, IMapper mapper, ILogger<ClassCo
     [HttpGet("{name}/SpellsPerDay")]
     public async Task<ActionResult<int>> GetSpellsPerDay(string name, int classLevel, int spellLevel, int abilityScore)
     {
-        var @class = await context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
+        var @class = await context.Class
+                                   .AsNoTracking()
+                                   .FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
 
-        if (@class is null)
+        if (@class?.SpellsPerDay is null)
         {
             return NotFound();
         }
 
-        return Tables.GetBonusSpells(spellLevel, abilityScore) + @class.SpellsPerDay?[classLevel][spellLevel];
+        if (!@class.SpellsPerDay.TryGetValue(classLevel, out var spellsByLevel) ||
+            !spellsByLevel.TryGetValue(spellLevel, out var baseSpells))
+        {
+            return NotFound($"Invalid class level {classLevel} or spell level {spellLevel}");
+        }
+
+        return Tables.GetBonusSpells(spellLevel, abilityScore) + baseSpells;
     }
 
     /// <summary>
@@ -80,7 +90,9 @@ public class ClassController(ApiContext context, IMapper mapper, ILogger<ClassCo
     [HttpGet("{name}/HighestSpellLevel")]
     public async Task<ActionResult<int>> GetHighestSpellLevel(string name, int classLevel)
     {
-        var @class = await context.Class.FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
+        var @class = await context.Class
+                                   .AsNoTracking()
+                                   .FirstOrDefaultAsync(c => c.Name == name.ToTitleCase());
         if (@class is null)
         {
             return NotFound();

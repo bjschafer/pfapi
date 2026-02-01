@@ -2,5 +2,5 @@ namespace api.Models.Response;
 
 public class SourceMaterialResponse
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
 }

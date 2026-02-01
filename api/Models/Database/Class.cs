@@ -5,10 +5,11 @@ namespace api.Models.Database;
 /// <summary>
 ///     Represents a character class
 /// </summary>
-public class Class : ISeedable
+public class Class
 {
-    public int    Id   { get; set; }
-    public string Name { get; set; }
+    public int Id { get; set; }
+
+    public required string Name { get; set; }
 
     /// <summary>
     /// First-level key is for the given class level.
@@ -33,10 +34,16 @@ public class Class : ISeedable
     /// <returns>The highest level, or null if something doesn't exist</returns>
     public int? MaxSpellLevel([Range(1, 20)] int? characterLevel)
     {
-        if (characterLevel is not null && SpellsPerDay is not null)
+        if (characterLevel is null || SpellsPerDay is null)
         {
-            return SpellsPerDay[characterLevel.Value].Keys.Max();
+            return null;
         }
-        return null;
+
+        if (!SpellsPerDay.TryGetValue(characterLevel.Value, out var spellsByLevel))
+        {
+            return null;
+        }
+
+        return spellsByLevel.Keys.Max();
     }
 }

@@ -5,16 +5,17 @@ namespace api.Models.Database;
 [Index(nameof(Name), IsUnique = true)]
 public class Spell
 {
-    public int    Id   { get; set; }
-    public string Name { get; set; }
+    public int Id { get; set; }
 
-    public string Description { get; set; }
-    public string Summary     { get; set; }
+    public required string Name { get; set; }
 
-    public ICollection<Descriptor>? Descriptors     { get; set; }
-    public ICollection<ClassLevel>  ClassLevels     { get; set; }
-    public string?                  SpellResistance { get; set; }
-    public string?                  SavingThrow     { get; set; }
+    public required string Description { get; set; }
+    public required string Summary     { get; set; }
+
+    public ICollection<Descriptor>?         Descriptors     { get; set; }
+    public required ICollection<ClassLevel> ClassLevels     { get; set; }
+    public string?                          SpellResistance { get; set; }
+    public string?                          SavingThrow     { get; set; }
 
     public bool HasDivineFocusComponent { get; set; }
     public bool HasFocusComponent       { get; set; }
@@ -33,8 +34,8 @@ public class Spell
     public string? MythicText      { get; set; }
     public string? MythicAugmented { get; set; }
 
-    public string CastingTime { get; set; }
-    public string Duration    { get; set; }
+    public required string CastingTime { get; set; }
+    public required string Duration    { get; set; }
 
     public string? Area    { get; set; }
     public string? Effect  { get; set; }
@@ -47,8 +48,8 @@ public class Spell
     public string? HauntStatistics { get; set; }
     public string? Patron          { get; set; }
 
-    public string  School    { get; set; }
-    public string? Subschool { get; set; }
+    public required string School    { get; set; }
+    public string?         Subschool { get; set; }
 
-    public SourceMaterial Source { get; set; }
+    public required SourceMaterial Source { get; set; }
 }

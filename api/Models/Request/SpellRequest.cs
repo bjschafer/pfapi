@@ -2,15 +2,15 @@ namespace api.Models.Request;
 
 public class SpellRequest
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public string Description { get; set; }
-    public string Summary     { get; set; }
+    public required string Description { get; set; }
+    public required string Summary     { get; set; }
 
-    public List<string>?           Descriptors     { get; set; }
-    public Dictionary<string, int> ClassLevels     { get; set; }
-    public string?                 SpellResistance { get; set; }
-    public string?                 SavingThrow     { get; set; }
+    public List<string>?                      Descriptors     { get; set; }
+    public required Dictionary<string, int>   ClassLevels     { get; set; }
+    public string?                            SpellResistance { get; set; }
+    public string?                            SavingThrow     { get; set; }
 
     public bool HasDivineFocusComponent { get; set; }
     public bool HasFocusComponent       { get; set; }
@@ -18,8 +18,9 @@ public class SpellRequest
     public bool HasSomaticComponent     { get; set; }
     public bool HasVerbalComponent      { get; set; }
 
-    public bool HasCostlyComponents { get; set; }
-    public int? MaterialCosts       { get; set; }
+    public bool    HasCostlyComponents { get; set; }
+    public int?    MaterialCosts       { get; set; }
+    public string? ComponentDetails    { get; set; }
 
     public bool IsDismissable { get; set; }
     public bool IsShapeable   { get; set; }
@@ -28,8 +29,8 @@ public class SpellRequest
     public string? MythicText      { get; set; }
     public string? MythicAugmented { get; set; }
 
-    public string CastingTime { get; set; }
-    public string Duration    { get; set; }
+    public required string CastingTime { get; set; }
+    public required string Duration    { get; set; }
 
     public string? Area    { get; set; }
     public string? Effect  { get; set; }
@@ -42,10 +43,10 @@ public class SpellRequest
     public string? HauntStatistics { get; set; }
     public string? Patron          { get; set; }
 
-    public string  School    { get; set; }
-    public string? Subschool { get; set; }
+    public required string School    { get; set; }
+    public string?         Subschool { get; set; }
 
-    public string Source { get; set; }
+    public required string Source { get; set; }
 
 #region Overrides of Object
 
