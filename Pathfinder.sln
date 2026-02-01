@@ -1,12 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "api\api.csproj", "{73A2A602-973A-45D7-90EC-31740E72FB42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "api/api.csproj", "{73A2A602-973A-45D7-90EC-31740E72FB42}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data Helper", "Data Helper\Data Helper.csproj", "{62A62F98-EC96-4313-AC5D-D97C8EE589BB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data Helper", "Data Helper/Data Helper.csproj", "{62A62F98-EC96-4313-AC5D-D97C8EE589BB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pathfinder.Tests", "tests\Pathfinder.Tests.csproj", "{4DCB0285-9B23-4E6D-9320-BAE12940F524}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pathfinder.Tests", "tests/Pathfinder.Tests.csproj", "{4DCB0285-9B23-4E6D-9320-BAE12940F524}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
