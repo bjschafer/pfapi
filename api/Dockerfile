@@ -1,9 +1,9 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0.101 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0.102 AS build
 WORKDIR /src
 COPY ["api.csproj", "."]
 RUN dotnet restore "api.csproj"
