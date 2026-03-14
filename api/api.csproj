@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="16.0.0" />
+        <PackageReference Include="AutoMapper" Version="16.1.1" />
         <PackageReference Include="AutoMapper.Extensions.ExpressionMapping" Version="10.0.0" />
         <PackageReference Include="EntityFramework" Version="6.5.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.2" />
