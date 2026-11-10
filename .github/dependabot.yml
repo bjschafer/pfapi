@@ -6,16 +6,29 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      # One weekly PR for every action bump, majors included: CI on the PR
+      # is the test, and an action major is rarely more than a runtime bump.
+      github-actions:
+        patterns:
+          - "*"
 
   # Maintain dependencies for nuget
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+    groups:
+      # Routine bumps ride together; majors (EF Core, ASP.NET) stay separate
+      # because they track a .NET release and usually need code changes.
+      nuget-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
 
   # Maintain dependencies for docker
   - package-ecosystem: "docker"
     directory: "/api"
     schedule:
-      interval: "daily"
+      interval: "weekly"
